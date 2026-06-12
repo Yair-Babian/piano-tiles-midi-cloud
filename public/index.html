@@ -3075,33 +3075,93 @@ function onlineResultAlreadyAdded(result){
   return songs.some(s=>s.importKey===key || s.id===key) || midiSongs.some(s=>s.importKey===key || s.id===key);
 }
 
-function renderOnlineMidiSearch(){
+async function renderOnlineMidiSearch(){
   const box=$("onlineMidiResults"), input=$("onlineMidiSearch"), status=$("onlineSearchStatus");
   if(!box||!input) return;
-  const qRaw=String(input.value||"").trim();
-  const q=normalizeSearchText(qRaw);
-  const terms=q.split(/\s+/).filter(Boolean);
-  const providerFilter=$("onlineProviderFilter")?.value||"all";
-  const genreFilter=$("onlineGenreFilter")?.value||"all";
 
-  const scored=onlineMidiProviderDemo
-    .filter(item=>providerFilter==="all" || item.providerType===providerFilter)
-    .filter(item=>genreFilter==="all" || normalizeSearchText(item.genre)===genreFilter)
-    .map(item=>({item,score:scoreOnlineResult(item,terms,q)}))
-    .filter(x=>terms.length?x.score>0:true)
-    .sort((a,b)=>b.score-a.score || a.item.title.localeCompare(b.item.title))
-    .slice(0,terms.length?12:8);
+  const qRaw=String(input.value||"").trim();
 
   box.innerHTML="";
-  if(status){
-    status.textContent=scored.length
-      ? `Found ${scored.length} indexed MIDI result${scored.length===1?"":"s"}. Current mode: local provider index.`
-      : "No indexed results. Try Beethoven, Canon, Mozart, Bach, Zelda, Mario, Tetris, Anime, Holiday, or Beginner.";
-  }
-  if(!scored.length){
-    box.innerHTML='<div class="catalogEmpty">No results in the local provider index. Try another song, artist, source or genre.</div>';
+
+  if(!qRaw){
+    if(status) status.textContent="Type a song name, artist, or style, then press Search.";
+    box.innerHTML='<div class="catalogEmpty">Search online MIDI results will appear here.</div>';
     return;
   }
+
+  if(status) status.textContent="Searching cloud MIDI catalog...";
+  box.innerHTML='<div class="catalogEmpty">Searching...</div>';
+
+  try{
+    const res=await fetch("/api/search?q="+encodeURIComponent(qRaw));
+    const data=await res.json();
+    const results=Array.isArray(data.results)?data.results:[];
+
+    box.innerHTML="";
+
+    if(status){
+      status.textContent=results.length
+        ? `Found ${results.length} cloud result${results.length===1?"":"s"}.`
+        : "No cloud results found yet. Try Beethoven, Mario, Zelda, Jingle, Canon.";
+    }
+
+    if(!results.length){
+      box.innerHTML='<div class="catalogEmpty">No cloud results found yet.</div>';
+      return;
+    }
+
+    for(const item of results){
+      const id="cloud_"+normalizeSearchText((item.title||"")+"_"+(item.artist||"")).replace(/\s+/g,"_");
+      const added=midiSongs.some(s=>s.catalogKey===id || normalizeSearchText(s.name)===normalizeSearchText(item.title));
+
+      const row=document.createElement("div");
+      row.className="onlineResult";
+      row.innerHTML=`
+        <div class="onlineIcon">🌐</div>
+        <div>
+          <div class="onlineTitle">${item.title||"Untitled"}</div>
+          <div class="onlineMeta">${item.artist||"Unknown"} · ${item.genre||"MIDI"}<br>${item.source||"Cloud Catalog"}</div>
+        </div>
+        <div class="onlineResultActions">
+          <button class="onlineBtn add ${added?'disabled':''}">${added?'Added':'Add'}</button>
+        </div>
+      `;
+
+      const addBtn=row.querySelector(".onlineBtn.add");
+      addBtn.onclick=(ev)=>{
+        ev.stopPropagation();
+
+        if(added){
+          coach("This result is already in your MIDI library.","gold");
+          return;
+        }
+
+        const template=songs.find(s=>normalizeSearchText(s.name)===normalizeSearchText(item.title))
+          || songs.find(s=>normalizeSearchText(s.composer||"").includes(normalizeSearchText(item.artist||"")))
+          || songs.find(s=>s.id==="ode")
+          || songs[0];
+
+        const song=JSON.parse(JSON.stringify(template));
+        song.id="cloud_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+        song.name=item.title||template.name;
+        song.composer=item.artist||"Cloud Catalog";
+        song.pack="midi";
+        song.midi=true;
+        song.catalogKey=id;
+
+        loadMidiSong(song);
+        renderOnlineMidiSearch();
+        coach("Added cloud result: "+song.name,"good");
+      };
+
+      box.appendChild(row);
+    }
+  }catch(err){
+    console.error(err);
+    if(status) status.textContent="Cloud search failed. Check server connection.";
+    box.innerHTML='<div class="catalogEmpty">Cloud search failed.</div>';
+  }
+}
 
   for(const {item,score} of scored){
     const added=onlineResultAlreadyAdded(item);
