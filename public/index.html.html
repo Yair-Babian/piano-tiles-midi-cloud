@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<title>Piano Nova Real Melodies</title>
+<style>
+:root{
+  --blue:#34c8ff; --violet:#705cff; --pink:#ff4bc8; --mint:#42f5b3;
+  --gold:#ffd66b; --red:#ff3f64; --ink:#111827;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#dfe9ff;font-family:Inter,Arial,"Segoe UI",sans-serif}
+body:before{content:"";position:fixed;inset:-20%;background:
+radial-gradient(circle at 18% 12%,rgba(52,200,255,.42),transparent 25%),
+radial-gradient(circle at 85% 22%,rgba(255,75,200,.32),transparent 29%),
+radial-gradient(circle at 50% 100%,rgba(112,92,255,.38),transparent 34%),
+linear-gradient(180deg,#eef5ff 0%,#cfdcff 42%,#1d2344 100%);animation:sky 12s ease-in-out infinite alternate}
+@keyframes sky{to{transform:scale(1.05) rotate(.6deg);filter:hue-rotate(8deg)}}
+#app{width:100vw;height:100dvh;display:grid;place-items:center;padding:10px;position:relative}
+#phone{width:min(462px,100vw);height:min(930px,100dvh);border-radius:36px;position:relative;overflow:hidden;background:#f8fbff;box-shadow:0 40px 110px rgba(14,28,70,.42),0 0 0 1px rgba(255,255,255,.85),inset 0 0 0 2px rgba(255,255,255,.55)}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#ui{position:absolute;inset:0;pointer-events:none;color:var(--ink)}
+.hud{position:absolute;top:0;left:0;right:0;z-index:5;padding:14px 16px 0;background:linear-gradient(180deg,rgba(248,251,255,.96),rgba(248,251,255,.68),transparent)}
+.status{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px}
+.pill{padding:9px 6px;border-radius:18px;background:rgba(255,255,255,.78);border:1px solid rgba(148,163,184,.22);box-shadow:0 12px 28px rgba(15,23,42,.11),inset 0 1px 0 rgba(255,255,255,.9);backdrop-filter:blur(18px);text-align:center}
+.pill small{display:block;font-size:9px;font-weight:900;color:#64748b;margin-bottom:2px}.pill b{display:block;font-size:20px;line-height:1;font-weight:1000;color:#0f172a}
+#hearts{color:var(--red);letter-spacing:1px}
+#progressWrap{height:7px;margin-top:11px;border-radius:999px;overflow:hidden;background:rgba(15,23,42,.1)}
+#progress{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--mint),var(--blue),var(--violet),var(--pink),var(--gold));box-shadow:0 0 18px rgba(52,200,255,.55)}
+#pauseBtn{position:absolute;z-index:6;top:116px;right:16px;width:48px;height:48px;border:0;border-radius:50%;color:#0f172a;background:rgba(255,255,255,.82);box-shadow:0 14px 34px rgba(15,23,42,.16);pointer-events:auto;font-weight:1000;font-size:18px}
+#judge{position:absolute;z-index:7;top:150px;left:0;right:0;text-align:center;font-size:39px;font-weight:1000;opacity:0;transform:scale(.7);color:#0f172a;text-shadow:0 10px 26px rgba(15,23,42,.2)}
+#judge.show{animation:judge .64s cubic-bezier(.15,1.25,.25,1) forwards}
+@keyframes judge{0%{opacity:0;transform:translateY(24px) scale(.72)}24%{opacity:1;transform:translateY(0) scale(1.12)}100%{opacity:0;transform:translateY(-38px) scale(.94)}}
+#coach{position:absolute;z-index:9;left:18px;right:18px;bottom:118px;text-align:center;padding:13px 16px;border-radius:22px;color:#0f172a;background:rgba(255,255,255,.88);box-shadow:0 18px 45px rgba(15,23,42,.16);font-size:14px;font-weight:900;line-height:1.35;backdrop-filter:blur(14px);animation:coachIn .35s ease-out;pointer-events:none}
+#coach.good{color:#065f46;background:rgba(220,252,231,.94)}#coach.bad{color:#9f1239;background:rgba(255,228,230,.95)}#coach.gold{color:#854d0e;background:rgba(254,249,195,.95)}
+@keyframes coachIn{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+#countdown{position:absolute;z-index:25;top:174px;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;color:#0f172a;pointer-events:none;padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.95);box-shadow:0 14px 36px rgba(15,23,42,.14);backdrop-filter:blur(14px)}
+#countNum{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:23px;line-height:1;font-weight:1000;color:white;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 8px 18px rgba(52,200,255,.24);animation:countPop .42s ease-out}
+#countText{font-size:13px;white-space:nowrap;font-weight:1000;color:#334155}#countdown.hidden{display:none}
+@keyframes countPop{0%{transform:scale(.45);opacity:0}45%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+.overlay{position:absolute;inset:0;z-index:30;pointer-events:auto;display:flex;align-items:center;justify-content:center;padding:22px;text-align:center;background:radial-gradient(circle at 50% 14%,rgba(52,200,255,.22),transparent 25%),linear-gradient(180deg,rgba(248,251,255,.84),rgba(224,232,255,.82));backdrop-filter:blur(20px)}
+.hidden{display:none!important}
+.card{width:min(390px,100%);max-height:92dvh;overflow:auto;border-radius:34px;padding:21px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 90px rgba(37,56,116,.25),inset 0 1px 0 rgba(255,255,255,1);position:relative}
+.logo{margin:0;font-size:48px;line-height:.88;letter-spacing:-3px;font-weight:1000;color:#0f172a}.logo span{color:transparent;background:linear-gradient(90deg,#0f172a,var(--blue),var(--violet),var(--pink));-webkit-background-clip:text;background-clip:text}
+.sub{margin:12px 0 16px;color:#475569;font-size:13px;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+button,select{border:0;border-radius:18px;padding:13px 14px;color:#0f172a;background:#fff;font-size:15px;font-weight:1000;box-shadow:0 13px 28px rgba(15,23,42,.11),inset 0 0 0 1px rgba(148,163,184,.16)}
+button:active{transform:scale(.97)}button.selected{color:white;background:linear-gradient(135deg,var(--blue),var(--violet));box-shadow:0 16px 34px rgba(52,200,255,.25)}
+button.primary{margin-top:12px;width:100%;padding:18px;color:white;font-size:19px;background:linear-gradient(135deg,#111827,var(--violet),var(--pink));box-shadow:0 20px 45px rgba(112,92,255,.27)}
+select{width:100%;margin-top:9px;text-align:center}.tip{color:#64748b;font-size:12px;margin:11px 0 0;line-height:1.45}
+.songMeta{text-align:left;padding:11px;border-radius:18px;background:rgba(255,255,255,.72);color:#475569;font-size:12px;line-height:1.45;margin-top:9px}
+.results p{margin:8px 0;font-size:17px;color:#334155}.stars{font-size:28px;color:#fbbf24;letter-spacing:2px}
+@media(max-height:720px){.logo{font-size:40px}.card{padding:18px}#pauseBtn{top:104px}#judge{top:132px}}
+
+.finalStars{
+  font-size:54px;
+  color:#fbbf24;
+  letter-spacing:5px;
+  text-shadow:0 0 18px rgba(251,191,36,.75),0 10px 28px rgba(15,23,42,.25);
+  animation:starPop .9s cubic-bezier(.15,1.4,.25,1) both;
+}
+.trophy{
+  font-size:58px;
+  margin:4px 0 8px;
+  animation:trophyFloat 1.2s ease-in-out infinite alternate;
+  filter:drop-shadow(0 12px 18px rgba(15,23,42,.25));
+}
+@keyframes starPop{
+  0%{transform:scale(.35) rotate(-8deg);opacity:0}
+  60%{transform:scale(1.18) rotate(3deg);opacity:1}
+  100%{transform:scale(1) rotate(0)}
+}
+@keyframes trophyFloat{
+  from{transform:translateY(0)}
+  to{transform:translateY(-8px)}
+}
+.scoreCard{
+  border-radius:24px;
+  padding:14px;
+  margin:12px 0;
+  background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(255,246,196,.62));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.85),0 16px 34px rgba(15,23,42,.12);
+}
+
+
+
+.comboBanner{
+  position:absolute;
+  left:50%;
+  top:154px;
+  transform:translateX(-50%);
+  padding:9px 16px;
+  border-radius:999px;
+  font-weight:1000;
+  font-size:18px;
+  pointer-events:none;
+  z-index:12;
+  color:#0f172a;
+  background:rgba(255,255,255,.82);
+  box-shadow:0 14px 34px rgba(15,23,42,.14);
+  backdrop-filter:blur(14px);
+  animation:comboPop .7s ease-out forwards;
+}
+@keyframes comboPop{
+  0%{opacity:0;transform:translateX(-50%) translateY(10px) scale(.92)}
+  20%{opacity:1}
+  100%{opacity:0;transform:translateX(-50%) translateY(-22px) scale(1)}
+}
+22%{opacity:1;transform:translateX(-50%) scale(1.08)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.22)}
+}
+
+.feverPulse{
+  animation:feverPulse 1.2s ease-in-out infinite alternate;
+}
+
+
+/* Step 5: Classic Piano Tiles feel - hit/miss over grading. */
+#phone.classicHitFlash{animation:classicHitFlash .18s ease-out both}
+#phone.classicMissShake{animation:classicMissShake .22s ease-out both}
+@keyframes classicHitFlash{
+  0%{box-shadow:0 40px 110px rgba(14,28,70,.42),0 0 0 1px rgba(255,255,255,.85),inset 0 0 0 2px rgba(255,255,255,.55)}
+  45%{box-shadow:0 40px 110px rgba(14,28,70,.42),0 0 0 1px rgba(255,255,255,.85),inset 0 0 0 5px rgba(52,200,255,.48),0 0 36px rgba(52,200,255,.32)}
+  100%{box-shadow:0 40px 110px rgba(14,28,70,.42),0 0 0 1px rgba(255,255,255,.85),inset 0 0 0 2px rgba(255,255,255,.55)}
+}
+@keyframes classicMissShake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  45%{transform:translateX(5px)}
+  70%{transform:translateX(-3px)}
+}
+.comboBanner.classic{
+  top:142px;
+  font-size:24px;
+  padding:12px 22px;
+  color:white;
+  background:linear-gradient(135deg,#111827,#705cff,#ff4bc8);
+  box-shadow:0 18px 44px rgba(112,92,255,.28),0 0 26px rgba(255,75,200,.28);
+}
+
+@keyframes feverPulse{
+  from{filter:saturate(1) brightness(1)}
+  to{filter:saturate(1.35) brightness(1.08)}
+}
+#feverBadge{
+  position:absolute;
+  z-index:13;
+  left:50%;
+  top:198px;
+  transform:translateX(-50%);
+  padding:8px 15px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:1000;
+  color:white;
+  background:linear-gradient(135deg,#705cff,#ff4bc8);
+  box-shadow:0 12px 32px rgba(112,92,255,.28),0 0 22px rgba(255,75,200,.35);
+  pointer-events:none;
+}
+#feverBadge.super{
+  background:linear-gradient(135deg,#ffd66b,#ff4bc8,#705cff);
+  box-shadow:0 14px 38px rgba(255,214,107,.38),0 0 30px rgba(255,75,200,.45);
+}
+
+.songCatalog{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.packTabs{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  padding:2px 0 4px;
+}
+.packTabs button{
+  white-space:nowrap;
+  padding:10px 12px;
+  font-size:13px;
+  border-radius:999px;
+}
+.songCard{
+  display:grid;
+  grid-template-columns:58px 1fr auto;
+  align-items:center;
+  gap:11px;
+  padding:12px;
+  border-radius:22px;
+  background:rgba(255,255,255,.78);
+  box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(148,163,184,.15);
+  text-align:left;
+}
+.songCard.selected{
+  outline:2px solid rgba(52,200,255,.7);
+  background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(232,245,255,.88));
+}
+.cover{
+  width:58px;height:58px;border-radius:18px;
+  display:grid;place-items:center;
+  color:white;font-size:27px;font-weight:1000;
+  box-shadow:0 13px 28px rgba(15,23,42,.18);
+}
+.cover.classical{background:linear-gradient(135deg,#111827,#705cff)}
+.cover.beginner{background:linear-gradient(135deg,#42f5b3,#34c8ff)}
+.cover.holiday{background:linear-gradient(135deg,#ff3f64,#ffd66b)}
+.songTitle{font-weight:1000;color:#0f172a;font-size:14px}
+.songInfo{font-size:11px;color:#64748b;margin-top:3px;line-height:1.35}
+.songStars{font-size:18px;color:#fbbf24;letter-spacing:1px;white-space:nowrap}
+.songBest{font-size:10px;color:#64748b;margin-top:4px}
+.songSelectHidden{display:none!important}
+
+.achievementsPanel,.leaderboardPanel{display:grid;gap:8px;margin-top:12px}
+.achievement{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;padding:10px;border-radius:18px;background:rgba(255,255,255,.76);box-shadow:inset 0 0 0 1px rgba(148,163,184,.13),0 10px 24px rgba(15,23,42,.08);text-align:left}
+.achievement.locked{opacity:.48;filter:grayscale(.7)}
+.achIcon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#ffd66b,#ff4bc8);color:white;font-size:22px}
+.achTitle{font-weight:1000;font-size:13px;color:#0f172a}.achDesc{font-size:11px;color:#64748b;margin-top:2px}.achStatus{font-size:11px;font-weight:1000;color:#64748b}
+.leaderRow{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px;border-radius:16px;background:rgba(255,255,255,.74);box-shadow:inset 0 0 0 1px rgba(148,163,184,.12)}
+.rank{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:white;font-weight:1000;background:linear-gradient(135deg,#34c8ff,#705cff)}
+.recordTitle{font-weight:1000;font-size:13px;color:#0f172a;text-align:left}.recordMeta{font-size:11px;color:#64748b;text-align:left;margin-top:2px}
+
+.feverTrail{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:4;
+  background:
+    radial-gradient(circle at 50% 78%, rgba(255,75,200,.18), transparent 28%),
+    linear-gradient(180deg, transparent, rgba(112,92,255,.10));
+  opacity:0;
+  transition:opacity .25s ease;
+}
+.feverTrail.on{opacity:1}
+.feverTrail.super{
+  background:
+    radial-gradient(circle at 50% 78%, rgba(255,214,107,.25), transparent 28%),
+    radial-gradient(circle at 20% 30%, rgba(52,200,255,.17), transparent 24%),
+    radial-gradient(circle at 80% 36%, rgba(255,75,200,.20), transparent 24%);
+  opacity:1;
+}
+
+.splash{
+  position:absolute;
+  inset:0;
+  z-index:70;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+  padding:24px;
+  background:
+    radial-gradient(circle at 50% 22%,rgba(52,200,255,.34),transparent 28%),
+    radial-gradient(circle at 80% 72%,rgba(255,75,200,.24),transparent 28%),
+    linear-gradient(180deg,rgba(248,251,255,.92),rgba(217,228,255,.92));
+  backdrop-filter:blur(20px);
+  animation:splashIn .55s ease-out both;
+}
+.splash.hideSplash{animation:splashOut .48s ease-in forwards}
+.splashCard{
+  width:min(360px,100%);
+  text-align:center;
+  border-radius:34px;
+  padding:28px 22px;
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 30px 90px rgba(37,56,116,.25),inset 0 1px 0 rgba(255,255,255,1);
+}
+.splashLogo{
+  margin:0;
+  font-size:58px;
+  line-height:.86;
+  letter-spacing:-4px;
+  font-weight:1000;
+  color:transparent;
+  background:linear-gradient(90deg,#111827,#34c8ff,#705cff,#ff4bc8);
+  -webkit-background-clip:text;
+  background-clip:text;
+}
+.splashKeys{
+  height:88px;
+  margin:18px 0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.splashKeys span{
+  border-radius:18px;
+  background:linear-gradient(180deg,#303544,#05060a);
+  box-shadow:0 16px 30px rgba(15,23,42,.24), inset 0 1px 0 rgba(255,255,255,.18);
+  animation:keyBounce 1.1s ease-in-out infinite alternate;
+}
+.splashKeys span:nth-child(2){animation-delay:.12s}
+.splashKeys span:nth-child(3){animation-delay:.24s}
+.splashKeys span:nth-child(4){animation-delay:.36s}
+.tapStart{
+  width:100%;
+  margin-top:8px;
+  padding:16px;
+  border-radius:999px;
+  color:white;
+  background:linear-gradient(135deg,#111827,#705cff,#ff4bc8);
+  box-shadow:0 18px 42px rgba(112,92,255,.28);
+  animation:pulseTap 1s ease-in-out infinite alternate;
+}
+@keyframes keyBounce{to{transform:translateY(-12px);filter:brightness(1.15)}}
+@keyframes pulseTap{to{transform:scale(1.035);box-shadow:0 22px 52px rgba(255,75,200,.30)}}
+@keyframes splashIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:scale(1)}}
+@keyframes splashOut{to{opacity:0;transform:scale(.98);visibility:hidden}}
+.roundBreakdown{
+  display:grid;
+  gap:7px;
+  margin:12px 0;
+}
+.roundRow{
+  display:grid;
+  grid-template-columns:70px 1fr auto;
+  gap:8px;
+  align-items:center;
+  padding:9px 10px;
+  border-radius:16px;
+  background:rgba(255,255,255,.72);
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,.12);
+  text-align:left;
+  font-size:12px;
+}
+.roundRow b{color:#0f172a}
+.roundRow span{color:#64748b}
+.recordBadge{
+  display:inline-block;
+  margin:8px 0 0;
+  padding:7px 12px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#dcfce7,#fef9c3);
+  color:#047857;
+  font-weight:1000;
+  font-size:12px;
+  box-shadow:0 10px 24px rgba(15,23,42,.10);
+}
+.finalStars.reveal span{
+  display:inline-block;
+  opacity:0;
+  transform:scale(.2) rotate(-25deg);
+  animation:revealStar .55s cubic-bezier(.15,1.45,.25,1) forwards;
+}
+.finalStars.reveal span:nth-child(2){animation-delay:.22s}
+.finalStars.reveal span:nth-child(3){animation-delay:.44s}
+@keyframes revealStar{
+  0%{opacity:0;transform:scale(.2) rotate(-25deg)}
+  65%{opacity:1;transform:scale(1.25) rotate(7deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+
+.dailyMission{
+  margin-top:10px;
+  padding:12px;
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(220,252,231,.72));
+  box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(255,255,255,.8);
+  text-align:left;
+}
+.dailyMission b{color:#0f172a}
+.dailyMission .missionLine{font-size:12px;color:#475569;margin-top:4px;line-height:1.4}
+.dailyMission .missionStatus{
+  display:inline-block;
+  margin-top:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:1000;
+  background:#eef2ff;
+  color:#3730a3;
+}
+.dailyMission.complete .missionStatus{
+  background:#dcfce7;
+  color:#047857;
+}
+
+.progressPanel{
+  margin-top:12px;
+  padding:13px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(238,242,255,.78));
+  box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(255,255,255,.85);
+  text-align:left;
+}
+.progressPanel h3{margin:0 0 8px;font-size:15px;color:#0f172a}
+.progressStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.progressStat{
+  padding:9px;border-radius:16px;background:rgba(255,255,255,.72);
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,.12);
+}
+.progressStat small{display:block;font-size:10px;color:#64748b;font-weight:900}
+.progressStat b{font-size:17px;color:#0f172a}
+.globalBar{
+  height:11px;border-radius:999px;background:rgba(15,23,42,.10);
+  overflow:hidden;margin:9px 0 4px;
+}
+.globalBar span{
+  display:block;height:100%;width:0%;
+  border-radius:999px;background:linear-gradient(90deg,#42f5b3,#34c8ff,#705cff,#ff4bc8,#ffd66b);
+  box-shadow:0 0 18px rgba(52,200,255,.45);
+}
+.packLock{
+  font-size:10px;
+  font-weight:1000;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#fee2e2;
+  color:#991b1b;
+  display:inline-block;
+  margin-top:4px;
+}
+.packOpen{
+  background:#dcfce7;
+  color:#047857;
+}
+.songCard.locked{
+  opacity:.46;
+  filter:grayscale(.8);
+}
+.unlockToast{
+  position:absolute;
+  left:22px;right:22px;top:210px;
+  z-index:90;
+  padding:16px;
+  border-radius:26px;
+  background:linear-gradient(135deg,rgba(255,255,255,.94),rgba(254,249,195,.94));
+  box-shadow:0 24px 70px rgba(15,23,42,.24);
+  text-align:center;
+  animation:unlockPop 1.8s ease-out forwards;
+  pointer-events:none;
+}
+.unlockToast b{display:block;font-size:18px;color:#0f172a}
+.unlockToast span{display:block;margin-top:4px;font-size:12px;color:#64748b;font-weight:900}
+@keyframes unlockPop{
+  0%{opacity:0;transform:translateY(20px) scale(.92)}
+  15%{opacity:1;transform:translateY(0) scale(1.04)}
+  75%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-18px) scale(.98)}
+}
+
+.shopPanel{
+  display:grid;
+  gap:9px;
+  margin-top:12px;
+}
+.shopItem{
+  display:grid;
+  grid-template-columns:50px 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:11px;
+  border-radius:20px;
+  background:rgba(255,255,255,.78);
+  box-shadow:0 12px 28px rgba(15,23,42,.09),inset 0 0 0 1px rgba(148,163,184,.12);
+  text-align:left;
+}
+.shopIcon{
+  width:50px;height:50px;border-radius:16px;
+  display:grid;place-items:center;
+  color:white;font-size:24px;font-weight:1000;
+  background:linear-gradient(135deg,#34c8ff,#705cff);
+  box-shadow:0 12px 24px rgba(15,23,42,.16);
+}
+.shopTitle{font-size:13px;font-weight:1000;color:#0f172a}
+.shopDesc{font-size:11px;color:#64748b;margin-top:2px;line-height:1.35}
+.shopBtn{
+  padding:9px 10px;
+  border-radius:999px;
+  font-size:11px;
+  min-width:78px;
+}
+.shopBtn.equipped{
+  background:#dcfce7;
+  color:#047857;
+}
+.shopBtn.locked{
+  background:#fee2e2;
+  color:#991b1b;
+}
+.themeNeon #phone{background:#0b1024}
+.themeNeon .hud{background:linear-gradient(180deg,rgba(15,23,42,.96),rgba(15,23,42,.55),transparent)}
+.themeNeon .pill{background:rgba(15,23,42,.72);color:white}
+.themeNeon .pill small{color:#93c5fd}
+.themeNeon .pill b{color:white}
+.themeSunset #phone{background:#fff7ed}
+.themeAurora #phone{background:#ecfeff}
+
+.midiPanel{margin-top:12px;padding:13px;border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(236,253,245,.76));box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(255,255,255,.85);text-align:left}
+.midiPanel b{color:#0f172a}.midiPanel input{width:100%;margin-top:9px;padding:11px;border-radius:16px;border:0;background:white;box-shadow:inset 0 0 0 1px rgba(148,163,184,.18);font-weight:900}
+.midiBadge{display:inline-block;margin-top:8px;padding:6px 10px;border-radius:999px;background:#dcfce7;color:#047857;font-size:11px;font-weight:1000}
+.songCard.midiSong .cover{background:linear-gradient(135deg,#10b981,#34c8ff,#705cff)}
+
+.startPanel{
+  margin:12px 0;
+  padding:13px;
+  border-radius:24px;
+  background:linear-gradient(135deg,rgba(255,255,255,.90),rgba(238,242,255,.78));
+  box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(255,255,255,.85);
+}
+.startPanel select{margin-top:0}
+.deleteMidiBtn{
+  margin-top:7px;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:10px;
+  min-width:0;
+  color:#991b1b;
+  background:#fee2e2;
+  box-shadow:inset 0 0 0 1px rgba(248,113,113,.18);
+}
+.longTileLabel{
+  font-weight:1000;
+  letter-spacing:.8px;
+}
+
+</style>
+</head>
+<body>
+<div id="app"><div id="phone">
+<canvas id="game" tabindex="0"></canvas>
+<div id="ui">
+<div id="splash" class="splash">
+  <div class="splashCard">
+    <h1 class="splashLogo">Piano<br>Real</h1>
+    <p class="sub">Tap tiles, build combo, clear 4 faster rounds.</p>
+    <div class="splashKeys"><span></span><span></span><span></span><span></span></div>
+    <button id="tapStartBtn" class="tapStart">Tap to Start</button>
+    <p class="tip">Keyboard: D F J K · 1 2 3 4 · Arrow keys</p>
+  </div>
+</div>
+<div class="hud"><div class="status">
+<div class="pill"><small>Score</small><b id="score">0</b></div>
+<div class="pill"><small>Combo</small><b id="combo">0</b></div>
+<div class="pill"><small>Coins</small><b id="coins">0</b></div>
+<div class="pill"><small>Round</small><b id="hearts">1/4</b></div>
+</div><div id="progressWrap"><div id="progress"></div></div></div>
+<div id="feverTrail" class="feverTrail"></div><button id="pauseBtn">Ⅱ</button><div id="judge"></div><div id="feverBadge" class="hidden">FEVER</div><div id="coach" class="hidden"></div>
+<div id="countdown" class="hidden"><div id="countNum">3</div><div id="countText">Get ready</div></div>
+
+<div id="menu" class="overlay"><div class="card">
+<h1 class="logo"><span>Piano</span><br>Real</h1>
+<p class="sub">Classic Piano Tiles mode: clean black tiles, sharp hit line, full MIDI background, and a simpler arcade-like visual style.</p>
+<div class="grid"><button id="songMode" class="selected">Real Songs</button><button id="endlessMode">Endless</button></div>
+<div id="startPanel" class="startPanel">
+<select id="difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option><option value="master">Master</option></select>
+<button id="startBtn" class="primary">Start Game</button>
+<button id="autoPlayBtn" class="primary" style="background:linear-gradient(135deg,#42f5b3,#34c8ff,#fff);color:#0f172a">Auto Player Demo</button>
+<p class="tip">Choose difficulty and start first; the song library is below.</p>
+</div>
+<select id="songSelect" class="songSelectHidden"></select>
+<div class="packTabs">
+  <button id="packAll" class="selected">All</button>
+  <button id="packBeginner">Beginner</button>
+  <button id="packClassical">Classical</button>
+  <button id="packHoliday">Holiday</button>
+  <button id="packMidi">MIDI</button>
+</div>
+<div id="midiPanel" class="midiPanel">
+  <b>🎼 MIDI Engine 2.0</b>
+  <div class="missionLine">Upload a .mid file. Full MIDI plays in the background, while gameplay shows a clean selected melody/rhythm map.</div>
+  <input id="midiInput" type="file" accept=".mid,.midi,audio/midi">
+  <span id="midiStatus" class="midiBadge hidden">MIDI loaded</span>
+</div>
+<div id="songCatalog" class="songCatalog"></div>
+<div id="songMeta" class="songMeta"></div>
+<div class="grid">
+  <button id="achievementsBtn">Achievements</button>
+  <button id="leaderboardBtn">Leaderboard</button>
+</div>
+<div class="grid">
+  <button id="progressBtn">Progress</button>
+  <button id="shopBtn">Shop</button>
+</div>
+<div id="progressPanel" class="progressPanel hidden"></div>
+<div id="shopPanel" class="shopPanel hidden"></div>
+<div id="dailyCard" class="songMeta" style="margin-top:10px"></div>
+<div id="dailyMission" class="dailyMission"></div>
+<button id="dailyBtn">Play Daily Challenge</button>
+<div id="achievementsPanel" class="achievementsPanel hidden"></div>
+<div id="leaderboardPanel" class="leaderboardPanel hidden"></div>
+<div class="grid"><button id="previewBtn">Preview Notes</button><button id="stopPreviewBtn">Stop Sound</button></div>
+
+<p class="tip">Step 9: MIDI delete buttons, long tiles for dense streams, and a cleaner start-first menu.</p>
+</div></div>
+
+<div id="pause" class="overlay hidden"><div class="card">
+<h1 class="logo"><span>Paused</span></h1>
+<button id="resumeBtn" class="primary">Resume</button><button id="restartBtn">Restart</button><button id="menuBtn">Menu</button>
+</div></div>
+
+<div id="roundComplete" class="overlay hidden">
+  <div class="card results">
+    <h1 class="logo"><span>Round</span><br>Clear!</h1>
+    <div class="stars" id="roundStars">★★★</div>
+    <p id="roundFeedback">Great job!</p>
+    <p>Round score: <b id="roundScore">0</b></p>
+    <p>Accuracy: <b id="roundAccuracy">0%</b></p>
+    <p class="tip" id="roundTip">Next round will be faster.</p>
+  </div>
+</div>
+
+<div id="over" class="overlay hidden"><div class="card results">
+<h1 class="logo"><span>Session</span><br>Summary</h1>
+<div class="finalStars reveal" id="stars"><span>☆</span><span>☆</span><span>☆</span></div><div id="recordBadge" class="recordBadge hidden">NEW RECORD!</div><p id="friendlyEnd">Nice try!</p>
+<p>Total score: <b id="finalScore">0</b></p><p>Best combo: <b id="finalCombo">0</b></p><p>Avg accuracy: <b id="accuracy">0%</b></p><p>Coins earned: <b id="coinsEarned">0</b></p><p>Best: <b id="bestEnd">0</b></p>
+<div id="roundBreakdown" class="roundBreakdown"></div><p class="tip" id="endTip">Tip: tap the black tiles in order. Miss only when you tap outside or let one pass.</p>
+<button id="againBtn" class="primary">Play Again</button><button id="homeBtn">Main Menu</button>
+</div></div>
+</div></div></div>
+
+<script>
+const canvas=document.getElementById("game"),ctx=canvas.getContext("2d"),phone=document.getElementById("phone");
+const $=id=>document.getElementById(id);
+let W,H,DPR,running=false,paused=false,counting=false,mode="song",autoPlayer=false;
+let feverMode=0,feverNotified=false,superFeverNotified=false;
+let roundNumber=1,totalRounds=4,roundScores=[],roundAccuracies=[],roundCombos=[],songFinished=false,roundEnding=false;
+let tiles=[],particles=[],rings=[],notesFx=[],keys=[];
+let score=0,combo=0,maxCombo=0,lives=3,hits=0,misses=0,total=0,elapsed=0,duration=85,last=0,lastSpawn=0,speed=390,gap=630,targetSpeed=390,targetGap=630,startGrace=0,fever=0;
+let beat=0,audioCtx=null,masterGain=null,accompGain=null,reverbGain=null,delayNode=null,feedbackGain=null,previewTimers=[],musicTimers=[],coachTimer=null,coinsEarned=0;
+let nextSpawnDelay=630;
+let gameMusicIndex=0, gameChordIndex=0;
+let coins=Number(localStorage.getItem("realMelodyCoins")||0),best=Number(localStorage.getItem("realMelodyBest")||0);
+let songProgress=JSON.parse(localStorage.getItem("realMelodySongProgress")||"{}");
+let achievements=JSON.parse(localStorage.getItem("realMelodyAchievements")||"{}");
+let leaderboard=JSON.parse(localStorage.getItem("realMelodyLeaderboard")||"{}");
+let currentPack="all";
+let midiSongs=JSON.parse(localStorage.getItem("realMelodyMidiSongs")||"[]");
+let midiPlaybackTimers=[];
+let midiGameStartTime=0,midiSpawnLeadMs=1700,midiLookAheadMs=3400;
+let unlockedThisRun=[];
+let dailyState=JSON.parse(localStorage.getItem("realMelodyDaily")||"{}");
+let dailyMissionState=JSON.parse(localStorage.getItem("realMelodyDailyMission")||"{}");
+let activeDailyMission=null;
+let progressionState=JSON.parse(localStorage.getItem("realMelodyProgression")||"{}");
+let shopState=JSON.parse(localStorage.getItem("realMelodyShop")||'{"owned":["classicTiles","defaultTheme","classicFever"],"equippedTile":"classicTiles","equippedTheme":"defaultTheme","equippedFever":"classicFever"}');
+const N={C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196,A3:220,B3:246.94,Bb3:233.08,
+C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,B4:493.88,Bb4:466.16,
+C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880,B5:987.77};
+const R="R";
+function n(name){
+  if(name===R) return 0;
+  if(typeof name==="number") return name;
+  if(N[name]) return N[name];
+  const m=String(name).match(/^([A-G])([#b]?)(-?\d)$/);
+  if(m){
+    const base={C:0,D:2,E:4,F:5,G:7,A:9,B:11}[m[1]];
+    const accidental=m[2]==="#"?1:m[2]==="b"?-1:0;
+    const octave=Number(m[3]);
+    const midi=(octave+1)*12+base+accidental;
+    return 440*Math.pow(2,(midi-69)/12);
+  }
+  return 392;
+}
+function seq(names,unit=1){return names.map(x=>Array.isArray(x)?{note:x[0],dur:x[1]}:{note:x,dur:unit})}
+const songs=[
+{id:"ode",pack:"classical",icon:"🎼",name:"Ode to Joy",composer:"Beethoven",bpm:118,
+ melody:seq(["E4","E4","F4","G4","G4","F4","E4","D4","C4","C4","D4","E4",["E4",1.5],["D4",.5],["D4",2],
+"E4","E4","F4","G4","G4","F4","E4","D4","C4","C4","D4","E4",["D4",1.5],["C4",.5],["C4",2]]),
+ chords:[["C4","E4","G4"],["G3","B3","D4"],["C4","E4","G4"],["F3","A3","C4"],["G3","B3","D4"],["C4","E4","G4"]]},
+{id:"twinkle",pack:"beginner",icon:"⭐",name:"Twinkle Twinkle Little Star",composer:"Traditional",bpm:104,
+ melody:seq(["C4","C4","G4","G4","A4","A4",["G4",2],"F4","F4","E4","E4","D4","D4",["C4",2],
+"G4","G4","F4","F4","E4","E4",["D4",2],"G4","G4","F4","F4","E4","E4",["D4",2],
+"C4","C4","G4","G4","A4","A4",["G4",2]]),
+ chords:[["C4","E4","G4"],["F3","A3","C4"],["C4","E4","G4"],["G3","B3","D4"],["C4","E4","G4"]]},
+{id:"jingle",pack:"holiday",icon:"🔔",name:"Jingle Bells",composer:"J. Pierpont",bpm:132,
+ melody:seq(["E4","E4",["E4",2],"E4","E4",["E4",2],"E4","G4","C4","D4",["E4",4],
+"F4","F4","F4","F4","F4","E4","E4","E4","E4","D4","D4","E4","D4",["G4",2],
+"E4","E4",["E4",2],"E4","E4",["E4",2],"E4","G4","C4","D4",["E4",4]]),
+ chords:[["C4","E4","G4"],["C4","E4","G4"],["F3","A3","C4"],["G3","B3","D4"],["C4","E4","G4"]]},
+{id:"mary",pack:"beginner",icon:"🐑",name:"Mary Had a Little Lamb",composer:"Traditional",bpm:112,
+ melody:seq(["E4","D4","C4","D4","E4","E4",["E4",2],"D4","D4",["D4",2],"E4","G4",["G4",2],
+"E4","D4","C4","D4","E4","E4","E4","E4","D4","D4","E4","D4",["C4",3]]),
+ chords:[["C4","E4","G4"],["G3","B3","D4"],["C4","E4","G4"],["G3","B3","D4"],["C4","E4","G4"]]},
+{id:"london",pack:"beginner",icon:"🌉",name:"London Bridge",composer:"Traditional",bpm:120,
+ melody:seq(["G4","A4","G4","F4","E4","F4","G4","D4","E4","F4","E4","F4",["G4",2],
+"G4","A4","G4","F4","E4","F4","G4","D4",["G4",2],"E4",["C4",2]]),
+ chords:[["C4","E4","G4"],["G3","B3","D4"],["F3","A3","C4"],["C4","E4","G4"]]},
+{id:"birthday",pack:"beginner",icon:"🎂",name:"Happy Birthday",composer:"Traditional",bpm:108,
+ melody:seq([["C4",.75],["C4",.25],"D4","C4","F4",["E4",2],["C4",.75],["C4",.25],"D4","C4","G4",["F4",2],
+["C4",.75],["C4",.25],"C5","A4","F4","E4",["D4",2],["Bb4",.75],["Bb4",.25],"A4","F4","G4",["F4",2]]),
+ chords:[["F3","A3","C4"],["C4","E4","G4"],["F3","A3","C4"],["Bb3","D4","F4"],["F3","A3","C4"]]},
+{id:"cancan",pack:"classical",icon:"💃",name:"Can-Can",composer:"Offenbach",bpm:148,
+ melody:seq(["G4","G4","A4","B4","C5","C5","D5","E5","F5","E5","D5","C5","B4","A4",["G4",2],
+"G4","G4","A4","B4","C5","C5","D5","E5","F5","E5","D5","C5","B4","A4",["G4",2]]),
+ chords:[["C4","E4","G4"],["G3","B3","D4"],["C4","E4","G4"],["F3","A3","C4"],["G3","B3","D4"],["C4","E4","G4"]]},
+{id:"fur_elise",pack:"classical",icon:"🎹",name:"Für Elise",composer:"Beethoven",bpm:128,
+ melody:seq(["E5","D5","E5","D5","E5","B4","D5","C5","A4",["C4",.75],["E4",.75],"A4","B4",["E4",.75],["G4",.75],"B4","C5",
+"E4","E5","D5","E5","D5","E5","B4","D5","C5","A4",["C4",.75],["E4",.75],"A4","B4",["E4",.75],"C5","B4","A4"]),
+ chords:[["A3","C4","E4"],["E3","G3","B3"],["A3","C4","E4"],["D3","F3","A3"],["E3","G3","B3"]]},
+{id:"canon",pack:"classical",icon:"🎻",name:"Canon in D",composer:"Pachelbel",bpm:110,
+ melody:seq(["D4","A3","B3","F3","G3","D3","G3","A3","F4","D4","E4","C4","D4","A3","B3","F3",
+"D5","A4","B4","F4","G4","D4","G4","A4"]),
+ chords:[["D3","F3","A3"],["A3","C4","E4"],["B3","D4","F4"],["F3","A3","C4"],["G3","B3","D4"],["D3","F3","A3"],["G3","B3","D4"],["A3","C4","E4"]]},
+{id:"silent",pack:"holiday",icon:"🌙",name:"Silent Night",composer:"Traditional",bpm:82,
+ melody:seq(["G4","A4",["G4",1.5],"E4",["G4",1.5],"A4",["G4",1.5],"E4","D5","D5",["B4",2],"C5","C5",["G4",2],
+"A4","A4","C5","B4","A4","G4","A4",["G4",1.5],"E4"]),
+ chords:[["C4","E4","G4"],["G3","B3","D4"],["C4","E4","G4"],["F3","A3","C4"],["C4","E4","G4"],["G3","B3","D4"]]},
+{id:"deck",pack:"holiday",icon:"🎄",name:"Deck the Halls",composer:"Traditional",bpm:138,
+ melody:seq(["G4","F4","E4","D4","C4","D4","E4","C4","D4","E4","F4","D4","E4","D4","C4","B3","C4",
+"G4","F4","E4","D4","C4","D4","E4","C4","D4","E4","F4","D4","E4","D4","C4"]),
+ chords:[["C4","E4","G4"],["G3","B3","D4"],["C4","E4","G4"],["F3","A3","C4"],["G3","B3","D4"],["C4","E4","G4"]]},
+{id:"swan",pack:"classical",icon:"🦢",name:"Swan Lake Theme",composer:"Tchaikovsky",bpm:96,
+ melody:seq(["B4","C5","D5",["E5",1.5],"D5","C5","B4","A4","G4","A4","B4",["C5",1.5],"B4","A4","G4",
+"D4","G4","B4","D5","C5","B4","A4","G4"]),
+ chords:[["G3","B3","D4"],["D3","F3","A3"],["G3","B3","D4"],["C4","E4","G4"],["D3","F3","A3"],["G3","B3","D4"]]}
+];
+let currentSong=songs[0];
+
+
+
+function midiNoteName(num){
+  const names=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  const octave=Math.floor(num/12)-1;
+  return names[num%12]+octave;
+}
+function midiFreq(num){
+  return 440*Math.pow(2,(num-69)/12);
+}
+function readVarLen(bytes,posObj){
+  let value=0,b;
+  do{ b=bytes[posObj.pos++]; value=(value<<7)+(b&0x7f); }while(b&0x80);
+  return value;
+}
+function readStr(bytes,pos,len){
+  let s="";
+  for(let i=0;i<len;i++) s+=String.fromCharCode(bytes[pos+i]);
+  return s;
+}
+function parseMidiToSong(arrayBuffer,fileName="Uploaded MIDI"){
+  const bytes=new Uint8Array(arrayBuffer);
+  let pos=0;
+  if(readStr(bytes,pos,4)!=="MThd") throw new Error("Not a valid MIDI file");
+  pos+=4;
+  const headerLen=(bytes[pos]<<24)|(bytes[pos+1]<<16)|(bytes[pos+2]<<8)|bytes[pos+3]; pos+=4;
+  const format=(bytes[pos]<<8)|bytes[pos+1]; pos+=2;
+  const tracks=(bytes[pos]<<8)|bytes[pos+1]; pos+=2;
+  const division=(bytes[pos]<<8)|bytes[pos+1]; pos+=2;
+  pos=8+headerLen;
+
+  let tempoEvents=[{tick:0,tempo:500000}];
+  let allEvents=[];
+
+  for(let tr=0;tr<tracks;tr++){
+    if(pos+8>bytes.length || readStr(bytes,pos,4)!=="MTrk") break;
+    pos+=4;
+    const len=(bytes[pos]<<24)|(bytes[pos+1]<<16)|(bytes[pos+2]<<8)|bytes[pos+3]; pos+=4;
+    const end=pos+len;
+    let tick=0,runningStatus=0;
+    const active={};
+    const programs=new Array(16).fill(0);
+
+    while(pos<end && pos<bytes.length){
+      const p={pos};
+      const delta=readVarLen(bytes,p);
+      pos=p.pos; tick+=delta;
+      let status=bytes[pos++];
+      if(status<0x80){pos--;status=runningStatus;} else runningStatus=status;
+
+      if(status===0xff){
+        const type=bytes[pos++]; const q={pos}; const metaLen=readVarLen(bytes,q); pos=q.pos;
+        if(type===0x51 && metaLen===3) tempoEvents.push({tick,tempo:(bytes[pos]<<16)|(bytes[pos+1]<<8)|bytes[pos+2]});
+        pos+=metaLen;
+      }else if(status===0xf0||status===0xf7){
+        const q={pos}; const syxLen=readVarLen(bytes,q); pos=q.pos+syxLen;
+      }else{
+        const cmd=status&0xf0, channel=status&0x0f;
+        const d1=bytes[pos++]; const needsTwo=cmd!==0xc0 && cmd!==0xd0; const d2=needsTwo?bytes[pos++]:0;
+        if(cmd===0xc0) programs[channel]=d1;
+        else if(cmd===0x90 && d2>0){
+          const key=channel+"_"+d1;
+          active[key]=active[key]||[];
+          active[key].push({tick,vel:d2,channel,program:programs[channel]});
+        }else if(cmd===0x80 || (cmd===0x90 && d2===0)){
+          const key=channel+"_"+d1, arr=active[key];
+          if(arr&&arr.length){
+            const st=arr.shift();
+            allEvents.push({midi:d1,note:midiNoteName(d1),freq:midiFreq(d1),start:st.tick,end:tick,durTicks:Math.max(1,tick-st.tick),vel:st.vel,channel:st.channel,program:st.program});
+          }
+        }
+      }
+    }
+    pos=end;
+  }
+
+  if(!allEvents.length) throw new Error("No playable notes found");
+
+  tempoEvents.sort((a,b)=>a.tick-b.tick);
+  function tickToSeconds(tick){
+    let seconds=0;
+    for(let i=0;i<tempoEvents.length;i++){
+      const cur=tempoEvents[i], next=tempoEvents[i+1];
+      const endTick=next?Math.min(tick,next.tick):tick;
+      if(endTick>cur.tick) seconds+=(endTick-cur.tick)*(cur.tempo/1000000)/division;
+      if(next && tick<next.tick) break;
+    }
+    return seconds;
+  }
+
+  allEvents.sort((a,b)=>a.start-b.start || a.channel-b.channel || a.midi-b.midi);
+  const firstTempo=tempoEvents[0]?.tempo||500000;
+  const bpm=Math.round(60000000/firstTempo)||120;
+
+  // TRUE HYBRID MIDI MODE
+  // ---------------------
+  // The audio layer keeps the complete MIDI performance. No playable note is
+  // thrown away from the listening experience: chords, accompaniment, bass and
+  // percussion stay in midiEvents and are played in the background.
+  //
+  // The gameplay layer is intentionally separate. It chooses a clear rhythmic
+  // / melodic subset for tiles so the player can follow the song without being
+  // buried under every MIDI note.
+  const fullEvents=allEvents.slice(0,20000).map(e=>({
+    note:e.note,freq:e.freq,time:tickToSeconds(e.start),
+    dur:Math.max(.035,Math.min(5,tickToSeconds(e.end)-tickToSeconds(e.start))),
+    vel:e.vel,channel:e.channel,program:e.program,midi:e.midi,start:e.start,end:e.end
+  }));
+
+  const musicalEvents=allEvents.filter(e=>e.channel!==9 && e.midi>=21 && e.midi<=108 && e.vel>0);
+
+  // STEP 1: BEAT GRID ENGINE
+  // ------------------------
+  // Piano Tiles should not feel like raw MIDI falling notes.
+  // This first step creates a clean rhythmic grid from the MIDI tempo, then
+  // places playable cues on that grid. The full MIDI still plays in the
+  // background exactly as imported; the grid affects only gameplay tiles.
+  const startGroups=new Map();
+  for(const e of musicalEvents){
+    if(!startGroups.has(e.start)) startGroups.set(e.start,[]);
+    startGroups.get(e.start).push(e);
+  }
+  const starts=[...startGroups.keys()].sort((a,b)=>a-b);
+
+  function strongestPerPitch(group){
+    const byMidi=new Map();
+    for(const e of group){
+      const old=byMidi.get(e.midi);
+      if(!old || e.vel>old.vel) byMidi.set(e.midi,e);
+    }
+    return [...byMidi.values()];
+  }
+
+  function choosePianoTilesCue(group,lastMidi=64,cellTime=0){
+    const unique=strongestPerPitch(group);
+    if(!unique.length) return null;
+    unique.sort((a,b)=>{
+      const score=e=>{
+        const eventTime=tickToSeconds(e.start);
+        const high=e.midi>=60?34:0;
+        const veryHigh=e.midi>=72?10:0;
+        const tooLow=e.midi<48?-28:0;
+        const velocity=(e.vel||64)*.85;
+        const continuity=-Math.abs(e.midi-lastMidi)*.12;
+        const gridCloseness=-Math.abs(eventTime-cellTime)*42;
+        return high+veryHigh+tooLow+velocity+continuity+gridCloseness;
+      };
+      return score(b)-score(a) || b.midi-a.midi;
+    });
+    return unique[0];
+  }
+
+  function buildBeatGrid(){
+    const lastTime=fullEvents.length?Math.max(...fullEvents.map(e=>e.time+Math.min(e.dur||0,1.5))):0;
+    const beatSec=60/Math.max(60,Math.min(200,bpm||120));
+    // Eighth-note grid, clamped to a Piano-Tiles-feeling reaction cadence.
+    const stepSec=Math.max(.18,Math.min(.34,beatSec/2));
+    const cells=[];
+    for(let t=0,i=0;t<=lastTime+stepSec;t+=stepSec,i++){
+      cells.push({index:i,time:t,events:[],strength:0});
+    }
+
+    const snapWindow=stepSec*.52;
+    for(const st of starts){
+      const time=tickToSeconds(st);
+      const cellIndex=Math.max(0,Math.min(cells.length-1,Math.round(time/stepSec)));
+      const cell=cells[cellIndex];
+      if(Math.abs(time-cell.time)<=snapWindow){
+        const group=startGroups.get(st)||[];
+        cell.events.push(...group);
+        cell.strength+=group.reduce((sum,e)=>sum+(e.vel||64),0);
+      }
+    }
+    return {stepSec,beatSec,cells};
+  }
+
+  const beatGrid=buildBeatGrid();
+
+  // STEP 2: PATTERN GENERATOR
+  // -------------------------
+  // Piano Tiles does not feel like raw note-to-lane mapping. It feels like
+  // readable finger patterns: runs, zigzags, jumps, and small repeats with
+  // enough predictability that the player can look ahead. The Beat Grid from
+  // step 1 decides WHEN cues can happen; this Pattern Generator decides HOW
+  // those cues flow across the four lanes.
+  const PIANO_TILE_PATTERNS={
+    stream:[0,1,2,3,0,1,2,3],
+    reverseStream:[3,2,1,0,3,2,1,0],
+    zigzag:[0,2,1,3,1,2,0,3],
+    centerWave:[1,2,1,3,2,0,1,2],
+    jump:[0,3,1,2,0,2,1,3],
+    stairs:[0,1,2,1,2,3,2,1],
+    outerInner:[0,3,1,2,3,0,2,1]
+  };
+
+  function patternNameForCell(cell,idx,lastPicked){
+    const busy=cell.events.length>=5;
+    const strong=cell.strength>520;
+    const pickedPreview=choosePianoTilesCue(cell.events,lastPicked?.midi||64,cell.time);
+    const interval=pickedPreview&&lastPicked?Math.abs(pickedPreview.midi-lastPicked.midi):0;
+    if(busy && idx%2===0) return 'zigzag';
+    if(busy) return 'outerInner';
+    if(interval>=9) return 'jump';
+    if(strong && idx%3===0) return 'centerWave';
+    if(idx%5===0) return 'stairs';
+    return idx%2===0?'stream':'reverseStream';
+  }
+
+  function makePatternState(){
+    return {name:'stream',pattern:PIANO_TILE_PATTERNS.stream,pos:0,lastLane:-1,lastPicked:null,phraseStart:-999};
+  }
+
+  function choosePatternLane(state,cell,picked,chartIndex){
+    // Start a new finger pattern every musical phrase or when density changes.
+    const phraseEvery=Math.max(4,Math.round((60/Math.max(60,Math.min(200,bpm||120)))/beatGrid.stepSec)*4);
+    const shouldChange=state.pos>=state.pattern.length || chartIndex-state.phraseStart>=phraseEvery || cell.events.length>=6;
+    if(shouldChange || state.phraseStart<0){
+      state.name=patternNameForCell(cell,chartIndex,state.lastPicked);
+      state.pattern=PIANO_TILE_PATTERNS[state.name]||PIANO_TILE_PATTERNS.stream;
+      state.pos=0;
+      state.phraseStart=chartIndex;
+    }
+
+    const pitchLane=Math.max(0,Math.min(3,Math.floor(((picked.midi-48)/34)*4)));
+    let lane=state.pattern[state.pos++ % state.pattern.length];
+
+    // Blend only lightly with pitch so it still feels like the melody rises
+    // and falls, but the final result remains a Piano-Tiles finger pattern.
+    if(chartIndex%3===0) lane=Math.round(lane*.72 + pitchLane*.28);
+
+    // Hard guardrails: no immediate same-lane repeat and no overuse of one lane.
+    if(lane===state.lastLane){
+      const candidates=[lane+1,lane+2,lane+3].map(x=>(x+4)%4);
+      lane=candidates.find(x=>x!==state.lastLane) ?? ((lane+1)%4);
+    }
+
+    state.lastLane=lane;
+    state.lastPicked=picked;
+    return Math.max(0,Math.min(3,lane));
+  }
+
+  // Build the playable chart from the beat grid.
+  // Timing comes from the grid; lanes come from the Pattern Generator.
+  const chart=[];
+  let lastTileTime=-999;
+  let lastMidi=64;
+  const patternState=makePatternState();
+  const minGridGap=beatGrid.stepSec*.92;
+  const maxTiles=Math.max(90,Math.min(2600,Math.ceil(beatGrid.cells.filter(c=>c.events.length).length*.72)));
+
+  for(const cell of beatGrid.cells){
+    if(chart.length>=maxTiles) break;
+    if(!cell.events.length) continue;
+    if(cell.time-lastTileTime<minGridGap) continue;
+
+    const picked=choosePianoTilesCue(cell.events,lastMidi,cell.time);
+    if(!picked) continue;
+
+    const lane=choosePatternLane(patternState,cell,picked,chart.length);
+
+    chart.push({
+      picked,
+      time:cell.time,
+      originalTime:tickToSeconds(picked.start),
+      startTick:picked.start,
+      laneHint:lane,
+      patternName:patternState.name,
+      rawNextGap:beatGrid.stepSec,
+      groupSize:cell.events.length,
+      gridIndex:cell.index,
+      gridStep:beatGrid.stepSec
+    });
+    lastTileTime=cell.time;
+    lastMidi=picked.midi;
+  }
+
+  // Fallback: make a basic ordered chart if the MIDI is unusual.
+  if(chart.length<12){
+    chart.length=0;
+    const step=Math.max(1,Math.floor(starts.length/120));
+    for(let i=0;i<starts.length;i+=step){
+      const group=startGroups.get(starts[i])||[];
+      const picked=choosePianoTilesCue(group,lastMidi,tickToSeconds(starts[i]));
+      if(picked){
+        chart.push({picked,time:tickToSeconds(starts[i]),originalTime:tickToSeconds(starts[i]),startTick:starts[i],laneHint:chart.length%4,rawNextGap:.32,groupSize:group.length,gridIndex:chart.length,gridStep:.32});
+        lastMidi=picked.midi;
+      }
+    }
+  }
+
+  // STEP 3: LANE FLOW GENERATOR
+  // ---------------------------
+  // Step 2 creates Piano-Tiles-style patterns, but separate patterns can still
+  // connect awkwardly: sudden 0->3 jumps, repeated edge hits, or a lane that
+  // feels overused. This pass rewrites only the lane numbers, not the timing or
+  // selected musical cues. The goal is a natural finger flow: short runs, clear
+  // direction changes, no stacking, and difficulty that rises gradually.
+  function laneFlowPenalty(candidate,prev,prev2,counts,recent,idx){
+    let p=0;
+    if(prev>=0){
+      const dist=Math.abs(candidate-prev);
+      if(dist===0) p+=80;                 // avoid same-lane repeats
+      if(dist===3) p+=18;                 // edge-to-edge jumps are tiring
+      if(dist===2) p+=5;                  // usable, but not too often
+      if(idx<24 && dist>=2) p+=12;        // early song should feel approachable
+    }
+    if(prev2>=0 && candidate===prev2 && prev!==candidate) p-=5; // 1-2-1 is natural
+    if(recent.filter(x=>x===candidate).length>=2) p+=22;        // avoid lane spam
+    if((candidate===0||candidate===3) && recent.slice(-3).filter(x=>x===candidate).length) p+=10;
+
+    const avg=(counts.reduce((a,b)=>a+b,0)+1)/4;
+    p+=Math.max(0,counts[candidate]-avg)*7; // balance long-term usage
+
+    // Reward readable streams: if we already move in one direction, continuing
+    // one lane further feels like Piano Tiles; bouncing randomly feels cheap.
+    if(prev>=0 && prev2>=0){
+      const d1=prev-prev2, d2=candidate-prev;
+      if(Math.sign(d1)===Math.sign(d2) && Math.abs(d2)===1) p-=12;
+      if(Math.abs(d1)===1 && d2===-d1) p-=4;
+      if(Math.abs(d1)>=2 && Math.abs(d2)>=2) p+=14;
+    }
+    return p;
+  }
+
+  function flowPreferredLane(raw,prev,prev2,idx){
+    if(prev<0) return raw;
+
+    // Smooth pattern boundaries. If a new pattern starts with an awkward jump,
+    // rotate it into the nearest comfortable continuation.
+    const dist=Math.abs(raw-prev);
+    if(dist===0) return (prev + (prev<2?1:-1) + 4) % 4;
+    if(dist===3){
+      if(prev===0) return 1;
+      if(prev===3) return 2;
+    }
+
+    // During the first measures, prefer adjacent motion so the player learns
+    // the flow before harder jumps appear.
+    if(idx<18 && dist>1) return prev + (raw>prev?1:-1);
+    return raw;
+  }
+
+  function applyLaneFlowGenerator(items){
+    const counts=[0,0,0,0];
+    const recent=[];
+    let prev=-1,prev2=-1;
+    for(let i=0;i<items.length;i++){
+      const raw=Math.max(0,Math.min(3,items[i].laneHint|0));
+      const preferred=flowPreferredLane(raw,prev,prev2,i);
+
+      // Candidate order: preferred lane first, then nearby lanes, then all.
+      const ordered=[preferred,preferred-1,preferred+1,preferred-2,preferred+2,0,1,2,3]
+        .map(x=>(x+4)%4)
+        .filter((x,j,a)=>a.indexOf(x)===j);
+      let best=ordered[0],bestScore=Infinity;
+      for(const lane of ordered){
+        const score=laneFlowPenalty(lane,prev,prev2,counts,recent,i) + (lane===preferred?0:6);
+        if(score<bestScore){bestScore=score;best=lane;}
+      }
+
+      items[i].rawLaneHint=raw;
+      items[i].laneHint=best;
+      items[i].flowLane=best;
+      items[i].laneFlowApplied=true;
+      counts[best]++;
+      recent.push(best);
+      if(recent.length>8) recent.shift();
+      prev2=prev;
+      prev=best;
+    }
+  }
+
+  applyLaneFlowGenerator(chart);
+
+  // STEP 9: LONG STREAM COMPRESSOR
+  // ------------------------------
+  // When the generated chart contains a fast run of adjacent cues, Piano Tiles
+  // often represents that run as one long press. The full MIDI still plays all
+  // notes in the background; this only simplifies the visible gameplay layer.
+  function compressDenseRunsToLongTiles(items){
+    // Piano Tiles style: HOLD tiles are special accents, not the main gameplay.
+    // Most notes must stay as individual tap tiles so the player actually plays.
+    // We therefore create HOLD only for a genuinely long sustained MIDI note.
+    // Dense runs, scales, and repeated fast notes remain tap tiles.
+    const out=[];
+    const longDurSec=1.85;       // only clearly sustained notes
+    const minHoldGapSec=8.0;     // prevent HOLD spam
+    const maxHoldShare=.055;     // at most about 5.5% of the chart
+    let lastHoldTime=-999;
+    let holdCount=0;
+
+    function cueDurSec(x){
+      const e=x?.picked;
+      if(!e) return 0;
+      return Math.max(.04,Math.min(4,tickToSeconds(e.end)-tickToSeconds(e.start)));
+    }
+    function makeHold(item){
+      const merged={...item};
+      const dur=cueDurSec(item);
+      merged.longTile=true;
+      merged.holdReason='true_sustained_note';
+      merged.longRunCount=1;
+      merged.holdSec=Math.max(.78,Math.min(2.05,dur));
+      merged.rawNextGap=Math.max(item.rawNextGap||beatGrid.stepSec, merged.holdSec*.50);
+      merged.patternName=(item.patternName||'sustained')+'_hold';
+      return merged;
+    }
+
+    const maxHolds=Math.max(1,Math.floor(items.length*maxHoldShare));
+    for(const item of items){
+      const t=item.time||0;
+      const canHold=holdCount<maxHolds && cueDurSec(item)>=longDurSec && (t-lastHoldTime)>=minHoldGapSec;
+      if(canHold){
+        out.push(makeHold(item));
+        holdCount++;
+        lastHoldTime=t;
+      }else{
+        out.push({...item,longTile:false,holdSec:0,longRunCount:0});
+      }
+    }
+    return out;
+  }
+
+  const playableChart=compressDenseRunsToLongTiles(chart);
+
+  const melody=playableChart.map((g,idx)=>{
+    const e=g.picked;
+    const next=playableChart[idx+1];
+    const gapSec=next?Math.max(.18,next.time-g.time):Math.max(.28,g.rawNextGap||.32);
+    return {
+      note:e.note,
+      dur:Math.max(.16,Math.min(1.1,e.durTicks/division || .35)),
+      midiStart:g.startTick,
+      time:g.time,
+      exactTime:g.time,
+      originalMidi:e.midi,
+      sourceDurSec:Math.max(.04,Math.min(4,tickToSeconds(e.end)-tickToSeconds(e.start))),
+      laneHint:g.laneHint,
+      patternName:g.patternName||null,
+      gameplayOnly:true,
+      pianoTilesCue:true,
+      longTile:!!g.longTile,
+      longRunCount:g.longRunCount||0,
+      holdSec:g.holdSec||0,
+      gapSec,
+      backgroundCovered:true,
+      // Only the selected cue is highlighted by the tap. The rest of the MIDI
+      // remains in the background audio layer and is never lost.
+      chordNotes:[{
+        note:e.note,freq:e.freq,vel:e.vel,
+        dur:Math.max(.04,Math.min(1.3,tickToSeconds(e.end)-tickToSeconds(e.start))),
+        channel:e.channel,program:e.program,midi:e.midi
+      }]
+    };
+  });
+
+  if(!melody.length) throw new Error("Could not create playable MIDI tiles");
+
+  return {
+    id:"midi_"+midiBufferHash(arrayBuffer), pack:"midi", icon:"🎼", midi:true, hybridMidi:true, allMidiAsTiles:false,
+    importKey:"midi_"+midiBufferHash(arrayBuffer),
+    sourceFileName:fileName,
+    name:fileName.replace(/\.(mid|midi)$/i,"").slice(0,32),
+    composer:"Imported MIDI",
+    bpm:Math.max(70,Math.min(180,bpm)),
+    melody, midiEvents:fullEvents,
+    beatGrid:{stepSec:beatGrid.stepSec,beatSec:beatGrid.beatSec,cells:beatGrid.cells.length,used:playableChart.length,patternGenerator:true,laneFlowGenerator:true,lookAhead:true},
+    chords:[["C4","E4","G4"],["G3","B3","D4"],["A3","C4","E4"],["F3","A3","C4"]]
+  };
+}
+function normalizeMidiSongName(name){
+  return String(name||"uploaded midi")
+    .replace(/\.(mid|midi)$/i,"")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g," ");
+}
+function midiBufferHash(arrayBuffer){
+  const bytes=new Uint8Array(arrayBuffer);
+  let h=2166136261>>>0;
+  for(let i=0;i<bytes.length;i++){
+    h^=bytes[i];
+    h=Math.imul(h,16777619)>>>0;
+  }
+  return h.toString(36)+"_"+bytes.length.toString(36);
+}
+function midiSongKey(song){
+  if(song&&song.importKey) return song.importKey;
+  const name=normalizeMidiSongName(song&&song.name);
+  const tiles=(song&&song.melody&&song.melody.length)||0;
+  const events=(song&&song.midiEvents&&song.midiEvents.length)||0;
+  const duration=Math.round(Math.max(0,...((song&&song.midiEvents)||[]).slice(-40).map(e=>(e.time||0)+(e.dur||0)))*10);
+  return "legacy_"+name+"_"+tiles+"_"+events+"_"+duration;
+}
+function dedupeMidiSongsList(list){
+  const byKey=new Map();
+  const byName=new Map();
+  for(const raw of Array.isArray(list)?list:[]){
+    if(!raw||!raw.midi) continue;
+    const key=midiSongKey(raw);
+    const nameKey=normalizeMidiSongName(raw.sourceFileName||raw.name);
+    // Exact import hash wins. For older saved songs without a hash, the normalized
+    // file/song name prevents the same uploaded file from appearing repeatedly.
+    const finalKey=raw.importKey?key:(byName.get(nameKey)||key);
+    if(!byKey.has(finalKey)){
+      byKey.set(finalKey,raw);
+      byName.set(nameKey,finalKey);
+    }
+  }
+  return [...byKey.values()].slice(-10);
+}
+function stopMidiPlayback(){
+  midiPlaybackTimers.forEach(clearTimeout);
+  midiPlaybackTimers=[];
+}
+function playMidiArrangement(song,volume=.48,delayMs=0){
+  stopMidiPlayback();
+  if(!song || !song.midiEvents || !song.midiEvents.length) return;
+  audio();
+
+  // Full background performance: schedule every parsed MIDI event.
+  // This is intentionally independent of the visible gameplay tiles.
+  song.midiEvents.forEach(ev=>{
+    const ms=Math.max(0,delayMs + ev.time*1000);
+    const timer=setTimeout(()=>{
+      if(!running && document.visibilityState==="hidden") return;
+      const vel=Math.max(.08,Math.min(1,(ev.vel||80)/127))*volume;
+      synthTone(ev.freq,Math.max(.06,Math.min(2.4,ev.dur)),vel,null,ev.program||0,ev.channel||0);
+    }, ms);
+    midiPlaybackTimers.push(timer);
+  });
+}
+function initMidiSongs(){
+  midiSongs=dedupeMidiSongsList(midiSongs);
+  localStorage.setItem("realMelodyMidiSongs",JSON.stringify(midiSongs));
+  for(const s of midiSongs){
+    if(!songs.find(x=>x.id===s.id || (x.midi&&midiSongKey(x)===midiSongKey(s)))) songs.push(s);
+  }
+}
+function loadMidiSong(song){
+  midiSongs=dedupeMidiSongsList(midiSongs);
+  const key=midiSongKey(song);
+  const nameKey=normalizeMidiSongName(song.sourceFileName||song.name);
+  let existing=midiSongs.find(s=>midiSongKey(s)===key) ||
+    midiSongs.find(s=>normalizeMidiSongName(s.sourceFileName||s.name)===nameKey);
+
+  if(existing){
+    song=existing;
+    coach("This MIDI is already in your library, so it was not added again.","gold");
+  }else{
+    midiSongs.push(song);
+    midiSongs=dedupeMidiSongsList(midiSongs).slice(-10);
+  }
+
+  localStorage.setItem("realMelodyMidiSongs",JSON.stringify(midiSongs));
+  if(!songs.find(x=>x.id===song.id || (x.midi&&midiSongKey(x)===midiSongKey(song)))) songs.push(song);
+  songs.splice(0,songs.length,...songs.filter((s,i,arr)=>!s.midi || arr.findIndex(x=>x.midi&&midiSongKey(x)===midiSongKey(s))===i));
+  populateSongs();
+  $("songSelect").value=song.id;
+  currentPack="midi";
+  currentSong=song;
+  updateSongMeta();
+  renderSongCatalog();
+  renderProgressPanel();
+  $("midiStatus").classList.remove("hidden");
+  const gridInfo=song.beatGrid?(" · beat grid "+Math.round(song.beatGrid.stepSec*1000)+"ms"):"";
+  $("midiStatus").textContent="Loaded: "+song.name+" · "+song.melody.length+" gameplay tiles"+gridInfo+" · full MIDI background";
+}
+function deleteMidiSong(songId){
+  const song=songs.find(s=>s.id===songId);
+  const key=song?midiSongKey(song):songId;
+  midiSongs=dedupeMidiSongsList(midiSongs).filter(s=>s.id!==songId && midiSongKey(s)!==key);
+  localStorage.setItem("realMelodyMidiSongs",JSON.stringify(midiSongs));
+
+  for(let i=songs.length-1;i>=0;i--){
+    if(songs[i].midi && (songs[i].id===songId || midiSongKey(songs[i])===key)){
+      songs.splice(i,1);
+    }
+  }
+
+  if(currentSong && currentSong.id===songId){
+    currentSong=songs.find(s=>!s.midi) || songs[0];
+  }
+  populateSongs();
+  if(currentSong) $("songSelect").value=currentSong.id;
+  updateSongMeta();
+  renderSongCatalog();
+  renderProgressPanel();
+  coach("MIDI song removed from your library.","gold");
+}
+
+function resize(){const r=phone.getBoundingClientRect();DPR=Math.min(2.4,devicePixelRatio||1);W=r.width;H=r.height;canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(DPR,0,0,DPR,0,0)}
+addEventListener("resize",resize);resize();
+function audio(){
+  if(!audioCtx) audioCtx=new (AudioContext||webkitAudioContext)();
+  if(audioCtx.state==="suspended") audioCtx.resume();
+
+  if(!masterGain){
+    masterGain=audioCtx.createGain();
+    masterGain.gain.value=.88;
+    masterGain.connect(audioCtx.destination);
+  }
+
+  // Small reverb/delay bus for a more piano-like space.
+  if(!reverbGain){
+    reverbGain=audioCtx.createGain();
+    reverbGain.gain.value=.18;
+    delayNode=audioCtx.createDelay(1.2);
+    delayNode.delayTime.value=.145;
+    feedbackGain=audioCtx.createGain();
+    feedbackGain.gain.value=.22;
+
+    delayNode.connect(feedbackGain);
+    feedbackGain.connect(delayNode);
+    delayNode.connect(reverbGain);
+    reverbGain.connect(masterGain);
+  }
+
+  if(!accompGain){
+    accompGain=audioCtx.createGain();
+    accompGain.gain.value=1.25;
+    accompGain.connect(masterGain);
+  }
+}
+function pianoTone(freq,dur=.36,velocity=.7,when=null,dest=null){
+  if(!freq) return;
+  audio();
+
+  const t=when??audioCtx.currentTime;
+  const out=dest||masterGain;
+  const v=Math.max(.08,Math.min(1,velocity));
+  const sustain=Math.max(.18,dur);
+
+  const makeLayer=(frequency,type,gainMul,detune=0,attack=.012,decay=sustain)=>{
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.type=type;
+    o.frequency.setValueAtTime(frequency,t);
+    o.detune.value=detune;
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(v*gainMul,t+attack);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0008,v*gainMul*.34),t+Math.min(.18,decay*.38));
+    g.gain.exponentialRampToValueAtTime(0.0001,t+decay);
+    o.connect(g);
+    g.connect(out);
+    g.connect(delayNode);
+    o.start(t);
+    o.stop(t+decay+.05);
+  };
+
+  // Fundamental + overtones + subtle detuned body.
+  makeLayer(freq,"triangle",.26,0,.010,sustain);
+  makeLayer(freq*2,"sine",.075,0,.016,sustain*.72);
+  makeLayer(freq*3,"sine",.032,0,.008,sustain*.35);
+  makeLayer(freq,"sine",.045,5,.018,sustain*.9);
+
+  // Hammer transient.
+  const click=audioCtx.createOscillator();
+  const cg=audioCtx.createGain();
+  click.type="square";
+  click.frequency.setValueAtTime(freq*5,t);
+  cg.gain.setValueAtTime(v*.045,t);
+  cg.gain.exponentialRampToValueAtTime(0.0001,t+.028);
+  click.connect(cg);
+  cg.connect(out);
+  click.start(t);
+  click.stop(t+.035);
+}
+
+
+function gmProgramFamily(program,channel){
+  if(channel===9) return "drums";
+  if(program>=32 && program<=39) return "bass";
+  if(program>=40 && program<=51) return "strings";
+  if(program>=56 && program<=63) return "brass";
+  if(program>=64 && program<=79) return "reed";
+  if(program>=80 && program<=87) return "lead";
+  return "piano";
+}
+function synthTone(freq,dur=.35,velocity=.7,when=null,program=0,channel=0){
+  if(channel===9){
+    drumTone(freq,dur,velocity,when);
+    return;
+  }
+  const family=gmProgramFamily(program,channel);
+  if(family==="piano"){
+    pianoTone(freq,dur,velocity,when);
+    return;
+  }
+  audio();
+  const t=when??audioCtx.currentTime;
+  const v=Math.max(.04,Math.min(1,velocity));
+  const out=masterGain;
+  const o=audioCtx.createOscillator();
+  const g=audioCtx.createGain();
+  o.frequency.setValueAtTime(freq,t);
+
+  if(family==="bass"){o.type="triangle";}
+  else if(family==="strings"){o.type="sawtooth";}
+  else if(family==="brass"){o.type="sawtooth";}
+  else if(family==="reed"){o.type="square";}
+  else{o.type="sine";}
+
+  const attack=family==="strings"?.06:family==="brass"?.035:.018;
+  const release=family==="strings"?.28:family==="bass"?.12:.18;
+  const sustain=Math.max(.12,Math.min(2.2,dur+release));
+
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.linearRampToValueAtTime(v*(family==="bass"?.22:.16),t+attack);
+  g.gain.exponentialRampToValueAtTime(v*(family==="strings"?.10:.06),t+Math.min(sustain*.55,.8));
+  g.gain.exponentialRampToValueAtTime(0.0001,t+sustain);
+
+  o.connect(g);
+  g.connect(out);
+  g.connect(delayNode);
+  o.start(t);
+  o.stop(t+sustain+.05);
+
+  // Soft octave layer for body
+  if(family==="strings" || family==="brass"){
+    const o2=audioCtx.createOscillator(), g2=audioCtx.createGain();
+    o2.type="sine"; o2.frequency.setValueAtTime(freq*2,t);
+    g2.gain.setValueAtTime(v*.035,t);
+    g2.gain.exponentialRampToValueAtTime(.0001,t+Math.min(1.2,sustain));
+    o2.connect(g2); g2.connect(out); o2.start(t); o2.stop(t+sustain+.03);
+  }
+}
+function drumTone(freq,dur=.15,velocity=.7,when=null){
+  audio();
+  const t=when??audioCtx.currentTime;
+  const v=Math.max(.05,Math.min(1,velocity));
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type="sine";
+  // Approximate GM percussion by MIDI note frequency range.
+  const f=freq<100?70:freq<180?120:220;
+  o.frequency.setValueAtTime(f,t);
+  o.frequency.exponentialRampToValueAtTime(Math.max(38,f*.45),t+.08);
+  g.gain.setValueAtTime(v*.22,t);
+  g.gain.exponentialRampToValueAtTime(.0001,t+.14);
+  o.connect(g); g.connect(masterGain); o.start(t); o.stop(t+.16);
+
+  // noisy transient
+  const buffer=audioCtx.createBuffer(1, audioCtx.sampleRate*.08, audioCtx.sampleRate);
+  const data=buffer.getChannelData(0);
+  for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*(1-i/data.length);
+  const noise=audioCtx.createBufferSource(), ng=audioCtx.createGain();
+  noise.buffer=buffer;
+  ng.gain.setValueAtTime(v*.08,t);
+  ng.gain.exponentialRampToValueAtTime(.0001,t+.06);
+  noise.connect(ng); ng.connect(masterGain); noise.start(t); noise.stop(t+.08);
+}
+
+// Compatibility wrapper.
+function tone(freq,dur=.22,gain=.18,type="triangle",when=null,dest=null){
+  pianoTone(freq,dur,Math.min(1,gain*3.6),when,dest);
+}
+function chord(notes,dur=.35,gain=.035,when=null,dest=null){notes.forEach((note,i)=>tone(n(note),dur,gain,i?"sine":"triangle",when,dest))}
+function drum(kind,when,dest=null){
+  audio();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=kind==="kick"?"sine":"square";
+  o.frequency.setValueAtTime(kind==="kick"?90:420,when);
+  o.frequency.exponentialRampToValueAtTime(kind==="kick"?42:170,when+.08);
+  g.gain.setValueAtTime(kind==="kick"?.26:.12,when);
+  g.gain.exponentialRampToValueAtTime(.001,when+(kind==="kick"?.16:.07));
+  o.connect(g);
+  g.connect(dest||masterGain);
+  o.start(when);
+  o.stop(when+.18);
+}
+function stopPreview(){previewTimers.forEach(clearTimeout);previewTimers=[]}
+function stopGameMusic(){musicTimers.forEach(clearTimeout);musicTimers=[]}
+function stopAllMusic(){stopPreview();stopGameMusic();stopMidiPlayback()}
+function playRealSongPreview(short=false){
+  stopPreview();
+  audio();
+  const s=currentSong;
+  if(s.midi && s.midiEvents){
+    coach("Playing full MIDI arrangement preview.","gold");
+    playMidiArrangement(s,.55);
+    return;
+  }
+  const beatMs=60000/s.bpm;
+  const maxNotes=short?18:s.melody.length;
+  let timeMs=0;
+  for(let i=0;i<maxNotes;i++){
+    const item=s.melody[i], dur=item.dur||1;
+    const timer=setTimeout(()=>{
+      if(!running){
+        pianoTone(n(item.note),dur*beatMs/1000*.95,.72);
+      }
+    }, timeMs);
+    previewTimers.push(timer);
+    timeMs+=dur*beatMs;
+  }
+}
+function startGameMusicLoop(){
+  // Notes-only mode: no accompaniment, chords, bass or drums.
+  stopGameMusic();
+}
+
+// STEP 9B: RUNTIME HOLD TILE NORMALIZER
+// --------------------------------------
+// Older localStorage songs may contain too many HOLD flags from previous builds.
+// This pass normalizes them back to Piano-Tiles-style gameplay: mostly taps,
+// with only rare true sustained notes as HOLD tiles.
+function upgradeMidiSongWithRuntimeHoldTiles(song){
+  if(!song || !song.midi || !Array.isArray(song.melody)) return song;
+
+  const base = Array.isArray(song.originalMelodyBeforeRuntimeHolds)
+    ? song.originalMelodyBeforeRuntimeHolds
+    : song.melody;
+
+  const src=base
+    .map(x=>({...x,longTile:false,runtimeHoldTile:false,complete:false,held:false,hit:false,holdSec:0,longRunCount:0}))
+    .sort((a,b)=>(a.exactTime??a.time??0)-(b.exactTime??b.time??0));
+
+  const out=[];
+  const longDurSec=1.85;
+  const minHoldGapSec=8.0;
+  const maxHoldShare=.055;
+  const maxHolds=Math.max(1,Math.floor(src.length*maxHoldShare));
+  let lastHoldTime=-999;
+  let holdCount=0;
+
+  function itemTime(x){ return x.exactTime??x.time??0; }
+  function itemDur(x){
+    const d=x.sourceDurSec ?? (x.chordNotes&&x.chordNotes[0]&&x.chordNotes[0].dur) ?? x.dur ?? 0;
+    return Math.max(0,Math.min(4,d));
+  }
+  function makeHold(item){
+    const merged={...item};
+    const dur=itemDur(item);
+    merged.longTile=true;
+    merged.runtimeHoldTile=true;
+    merged.holdReason='true_sustained_note';
+    merged.longRunCount=1;
+    merged.holdSec=Math.max(.78,Math.min(2.05,dur));
+    merged.gapSec=Math.max(merged.holdSec*.50, item.gapSec||.24);
+    merged.patternName=(item.patternName||'sustained')+'_hold';
+    return merged;
+  }
+
+  for(const item of src){
+    const t=itemTime(item);
+    const canHold=holdCount<maxHolds && itemDur(item)>=longDurSec && (t-lastHoldTime)>=minHoldGapSec;
+    if(canHold){
+      out.push(makeHold(item));
+      holdCount++;
+      lastHoldTime=t;
+    }else{
+      out.push({...item,longTile:false,runtimeHoldTile:false,holdSec:0,longRunCount:0,held:false,complete:false});
+    }
+  }
+
+  song.originalMelodyBeforeRuntimeHolds=src;
+  song.melody=out;
+  song._runtimeHoldUpgraded=true;
+  song._holdModel='piano_tiles_rare_sustained_v1';
+  return song;
+}
+
+function configure(){const d=$("difficulty").value;currentSong=songs.find(s=>s.id===$("songSelect").value)||songs[0];
+currentSong=upgradeMidiSongWithRuntimeHoldTiles(currentSong);
+const midiLast=currentSong.midi?Math.max(0,...(currentSong.midiEvents||currentSong.melody).map(x=>x.time??x.exactTime??0)):0;
+duration=mode==="endless"?99999:(currentSong.midi?Math.max(20,midiLast+2):Math.max(90,currentSong.melody.reduce((a,b)=>a+(b.dur||1),0)*(60000/currentSong.bpm)/1000*2.5));
+
+// Step 6: Classic Piano Tiles speed curve.
+// Piano Tiles feels stable because the board scrolls at a predictable speed.
+// The song rhythm controls WHEN tiles appear; the falling speed itself should
+// not jump wildly according to BPM. Each round now accelerates gently, and
+// difficulty changes the baseline only.
+const cfg={
+  easy:{speed:300,gap:760,lives:6},
+  normal:{speed:340,gap:690,lives:4},
+  hard:{speed:390,gap:620,lives:3},
+  master:{speed:445,gap:560,lives:2}
+}[d];
+const roundCurve=1+(roundNumber-1)*0.10;
+const modeCurve=mode==="endless"?1.05:1;
+targetSpeed=Math.round(cfg.speed*roundCurve*modeCurve);
+targetGap=Math.round(cfg.gap/roundCurve);
+
+// MIDI gameplay keeps the same visual physics as built-in songs.
+// The full MIDI still plays in the background; only the playable tile map
+// is projected onto this stable scrolling surface.
+if(currentSong && currentSong.midi){
+  targetSpeed=Math.round(cfg.speed*(1+(roundNumber-1)*0.07));
+  targetGap=Math.round(cfg.gap*1.08);
+}
+
+// Start close to the target to avoid a sluggish first seconds, then ease in.
+speed=Math.max(260,targetSpeed*.92);
+gap=targetGap+160;
+nextSpawnDelay=gap;
+lives=cfg.lives;
+startGrace=currentSong&&currentSong.midi?0:1.2;
+if(currentSong&&currentSong.midi){
+  const g=geom();
+  const startY=g.top-190;
+  const tileH=112;
+  const travelPx=Math.max(220,g.hitY-(startY+tileH));
+  midiSpawnLeadMs=Math.round((travelPx/speed)*1000);
+
+  // Step 4 + Step 6: readable look-ahead based on stable speed.
+  // This gives a classic queue of upcoming tiles without flooding the screen.
+  midiLookAheadMs=Math.max(midiSpawnLeadMs+780, Math.min(3900, midiSpawnLeadMs+1700));
+}
+}
+function hud(){$("score").textContent=score;$("combo").textContent=combo;$("coins").textContent=coins;$("hearts").textContent=roundNumber+"/"+totalRounds;$("progress").style.width=mode==="endless"?Math.min(100,fever)+"%":Math.min(100,elapsed/duration*100)+"%"}
+function geom(){const top=110,bottom=H-92,left=18,right=W-18,laneW=(right-left)/4,hitY=H-185;return{top,bottom,left,right,laneW,hitY}}
+function tileRect(t){const g=geom();return{x:g.left+t.lane*g.laneW+5,y:t.y,w:g.laneW-10,h:t.h}}
+function laneForNote(note,index=beat,item=null){
+  if(item && Number.isFinite(item.laneHint)) return Math.max(0,Math.min(3,item.laneHint));
+  // Use pitch + phrase position to spread notes across all four keys.
+  // This keeps the melody recognizable but avoids only left/right extremes.
+  const f=n(note);
+  const pitchBucket=Math.max(0,Math.min(3,Math.floor(((f-250)/550)*4)));
+  const phrasePattern=[0,1,2,3,2,1,0,2,3,1,2,0,1,3,2,0];
+  const patternLane=phrasePattern[index % phrasePattern.length];
+  return Math.round((pitchBucket + patternLane) / 2);
+}
+function midiShouldSpawnNext(now){
+  if(!currentSong.midi) return true;
+  const item=currentSong.melody[beat];
+  if(!item) return false;
+  const exact=(item.exactTime ?? item.time ?? 0);
+
+  // Step 4: spawn by a wider look-ahead window, not only by travel time.
+  // This makes the next notes visible earlier, like Piano Tiles.
+  return now >= midiGameStartTime + exact*1000 - midiLookAheadMs;
+}
+function spawn(){
+  const item=currentSong.melody[beat%currentSong.melody.length];
+  beat++;
+  const dur=item.dur||1;
+  const lane=laneForNote(item.note,beat,item),gold=Math.random()<.08,long=!gold&&((!currentSong.midi&&dur>1.25)||(currentSong.midi&&item.longTile));
+  const gNow=geom();
+  const holdSec=currentSong.midi&&item.longTile?Math.max(.55,Math.min(2.1,item.holdSec||1)):0;
+  const h=long?(currentSong.midi?Math.max(260,Math.min(560,150+holdSec*targetSpeed*.95)):230):112;
+  const autoHitTime=currentSong.midi ? midiGameStartTime + (item.exactTime ?? item.time ?? 0)*1000 : null;
+  let y=gNow.top-190;
+  if(currentSong.midi && autoHitTime){
+    // Place each early-spawned tile according to its real future hit time.
+    // This preserves timing while showing a longer readable queue ahead.
+    const timeToHitSec=Math.max(0,(autoHitTime-performance.now())/1000);
+    y=gNow.hitY-h-timeToHitSec*speed;
+  }
+  tiles.push({
+    lane,y,h,gold,long,
+    note:item.note,dur,gapSec:item.gapSec||null,holdSec, longRunCount:item.longRunCount||0,
+    exactTime:item.exactTime ?? item.time ?? null,
+    chordNotes:item.chordNotes||null,
+    hit:false,held:false,complete:false,glow:0,scale:1,soundPlayed:false,
+    autoHitTime
+  });
+  total++;
+
+  // Next tile timing follows the song rhythm.
+  const beatMs=60000/currentSong.bpm;
+  if(currentSong.midi){
+    // Match the original MIDI timing: each tile spacing follows the actual
+    // time gap between this MIDI event group and the next one.
+    const gapMs=(item.gapSec ? item.gapSec*1000 : dur*beatMs);
+    nextSpawnDelay=Math.max(260, Math.min(1400, gapMs*.92));
+  }else{
+    nextSpawnDelay=Math.max(300, dur*beatMs*.72);
+  }
+  return true;
+}
+function judge(text,color){const el=$("judge");el.textContent=text;el.style.color=color;el.classList.remove("show");void el.offsetWidth;el.classList.add("show")}
+function coach(message,type=""){const c=$("coach");c.textContent=message;c.className=type;c.classList.remove("hidden");clearTimeout(coachTimer);coachTimer=setTimeout(()=>c.classList.add("hidden"),2200)}
+function addBurst(x,y,color,n=10){rings.push({x,y,r:8,a:1,color});for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=70+Math.random()*150;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:.55,max:.55,size:2.5+Math.random()*4.5,color})}}
+function pressKey(lane,color){keys.push({lane,a:1,color})}
+function classicFlash(type="hit"){
+  const cls=type==="miss"?"classicMissShake":"classicHitFlash";
+  phone.classList.remove(cls);
+  void phone.offsetWidth;
+  phone.classList.add(cls);
+  setTimeout(()=>phone.classList.remove(cls),260);
+}
+function hitTile(t,x,y,kind="tap"){if(t.hit&&!t.long)return;if(t.long&&!t.held&&kind==="tap"){t.held=true;coach("Hold this sustained note until it passes the glowing line.","good")}
+const g=geom(),dist=Math.abs((t.y+t.h)-g.hitY);
+// Classic Piano Tiles feel: the player sees HIT/MISS, not a rhythm-game
+// grading stack. We still keep timing internally for score/coins.
+let timing="GOOD",label="HIT",color="#111827",base=2;
+if(dist<24){timing="PERFECT";base=5}
+else if(dist<58){timing="GREAT";base=3}
+else{timing="GOOD";base=2}
+if(t.gold){label="BONUS";color="#ffd66b";base+=10}
+if(kind==="release"){label="HOLD";color="#705cff";base+=3}
+if(fever>=100){base*=2;color="#ff4bc8"}
+if(!t.hit){
+  hits++;combo++;maxCombo=Math.max(maxCombo,combo);showComboMilestone(combo);
+  if(combo>=50) unlockAchievement("combo_50");
+  if(combo>=100) unlockAchievement("combo_100");
+  updateFeverMode();
+  const mult=feverMultiplier();
+  score+=(base+Math.floor(combo/16))*mult;
+  coinsEarned+=t.gold?3:(timing==="PERFECT"?1:0);
+  fever=Math.min(120,fever+(t.gold?28:6));
+}else if(kind==="release" && !t.holdScoreAdded){
+  // Long-note completion gives a small bonus but does not replay the note.
+  t.holdScoreAdded=true;
+  score+=3;
+  coinsEarned+=1;
+}
+t.hit=true;t.glow=1;t.scale=1.08;
+classicFlash("hit");
+const visibleLabel = combo>0 && combo%10===0 ? combo+" COMBO" : label;
+judge(visibleLabel,color);
+addBurst(x,y,color,t.gold?22:12);pressKey(t.lane,color);
+if(t.gold)coach("Bonus tile ⭐","gold");
+else if(combo>0&&combo%16===0)coach((feverMode? "Fever streak · ":"Great streak · ")+combo+" combo","good");
+if(!t.soundPlayed){
+  t.soundPlayed=true;
+  const velocity = timing==="PERFECT" ? .95 : timing==="GREAT" ? .78 : .58;
+
+  if(currentSong.midi){
+    // Hybrid mode: the full MIDI is already playing in the background.
+    // A correct tap only adds a tiny tactile piano accent, not a duplicate chord.
+    pianoTone(n(t.note),.10,velocity*.10);
+  }else if(t.chordNotes && t.chordNotes.length){
+    const count=t.chordNotes.length;
+    t.chordNotes.forEach((cn,i)=>{
+      const baseVel=Math.max(.12,Math.min(1,(cn.vel||80)/127));
+      const mixScale=count>8?.42:count>5?.55:count>3?.68:.82;
+      const v=baseVel*velocity*mixScale;
+      synthTone(cn.freq||n(cn.note), Math.max(.10,Math.min(1.85,cn.dur||.42)), v, audioCtx.currentTime+i*.0025, cn.program||0, cn.channel||0);
+    });
+  }else{
+    pianoTone(n(t.note),t.long?1.15:.42,velocity);
+  }
+}
+notesFx.push({x,y,text:"+"+base,color,a:1,vy:-45});hud()}
+function miss(x=null,y=null,reason="Missed note — keep going."){
+  misses++;
+  combo=0;updateFeverMode();
+  fever=Math.max(0,fever-18);
+  judge("MISS","#ff3f64");
+  classicFlash("miss");
+  // Soft feedback only. No penalty, no lives, no game over.
+  tone(196,.10,.025,"sine");
+  if(x!==null)addBurst(x,y,"#705cff",6);
+  coach("Tap only the black tiles.","bad");
+  hud();
+}
+function drawBg(dt){
+  // Step 7: cleaner Piano Tiles-style visual stage.
+  // Less decorative noise, stronger contrast, and a calmer background so the
+  // black tiles are the main focus.
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"#f7f9ff");
+  g.addColorStop(.55,"#edf2ff");
+  g.addColorStop(1,"#dfe8fb");
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  // Very subtle fever tint only; no busy blobs during normal play.
+  if(feverMode>0){
+    const f=ctx.createLinearGradient(0,0,W,H);
+    if(feverMode===2){
+      f.addColorStop(0,"rgba(255,214,107,.10)");
+      f.addColorStop(.5,"rgba(255,75,200,.09)");
+      f.addColorStop(1,"rgba(112,92,255,.08)");
+    }else{
+      f.addColorStop(0,"rgba(52,200,255,.08)");
+      f.addColorStop(.5,"rgba(255,75,200,.07)");
+      f.addColorStop(1,"rgba(112,92,255,.06)");
+    }
+    ctx.fillStyle=f;
+    ctx.fillRect(0,0,W,H);
+  }
+}
+function roundRect(x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function drawBoard(){
+  const g=geom();
+
+  // White playfield, almost flat, like a classic Piano Tiles board.
+  ctx.save();
+  ctx.shadowBlur=8;
+  ctx.shadowColor="rgba(15,23,42,.10)";
+  roundRect(g.left-6,g.top-8,g.right-g.left+12,g.bottom-g.top+18,18);
+  ctx.fillStyle="rgba(255,255,255,.96)";
+  ctx.fill();
+  ctx.restore();
+
+  for(let i=0;i<4;i++){
+    const x=g.left+i*g.laneW;
+    ctx.fillStyle=i%2?"#fbfcff":"#f5f7fb";
+    ctx.fillRect(x,g.top,g.laneW,g.bottom-g.top);
+
+    // Stronger vertical lane separators; no animated horizontal grid.
+    ctx.strokeStyle="rgba(15,23,42,.16)";
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(x,g.top);
+    ctx.lineTo(x,g.bottom);
+    ctx.stroke();
+  }
+  ctx.strokeStyle="rgba(15,23,42,.18)";
+  ctx.beginPath();
+  ctx.moveTo(g.right,g.top);
+  ctx.lineTo(g.right,g.bottom);
+  ctx.stroke();
+
+  // Clean danger/hit zone: one readable black line with a light glow.
+  const hz=ctx.createLinearGradient(0,g.hitY-60,0,g.hitY+64);
+  hz.addColorStop(0,"rgba(17,24,39,0)");
+  hz.addColorStop(.52,feverMode?"rgba(255,75,200,.10)":"rgba(17,24,39,.075)");
+  hz.addColorStop(1,"rgba(17,24,39,0)");
+  ctx.fillStyle=hz;
+  ctx.fillRect(g.left,g.hitY-60,g.right-g.left,124);
+
+  ctx.save();
+  ctx.shadowBlur=feverMode?12:7;
+  ctx.shadowColor=feverMode?"rgba(255,75,200,.42)":"rgba(15,23,42,.38)";
+  ctx.strokeStyle=feverMode?"#ff4bc8":"#111827";
+  ctx.lineWidth=4;
+  ctx.lineCap="round";
+  ctx.beginPath();
+  ctx.moveTo(g.left+10,g.hitY);
+  ctx.lineTo(g.right-10,g.hitY);
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.fillStyle="rgba(15,23,42,.42)";
+  ctx.font="900 10px Arial";
+  ctx.textAlign="center";
+  ctx.fillText("TAP LINE",(g.left+g.right)/2,g.hitY+19);
+}
+function drawKeyboard(){
+  const g=geom(),y=H-92,h=92;
+  ctx.save();
+  ctx.shadowBlur=10;
+  ctx.shadowColor="rgba(15,23,42,.12)";
+  roundRect(g.left-6,y,g.right-g.left+12,h+14,18);
+  ctx.fillStyle="#ffffff";
+  ctx.fill();
+  ctx.restore();
+
+  const labels=["D / 1","F / 2","J / 3","K / 4"];
+  for(let i=0;i<4;i++){
+    const x=g.left+i*g.laneW,active=keys.find(k=>k.lane===i);
+    ctx.fillStyle=active?"rgba(17,24,39,.12)":"#f8fafc";
+    ctx.fillRect(x,y,g.laneW,h);
+    ctx.strokeStyle="rgba(15,23,42,.16)";
+    ctx.strokeRect(x,y,g.laneW,h);
+    ctx.fillStyle=active?"#111827":"rgba(15,23,42,.48)";
+    ctx.font="1000 13px Arial";
+    ctx.textAlign="center";
+    ctx.fillText(labels[i],x+g.laneW/2,y+38);
+  }
+  keys=keys.filter(k=>(k.a-=.08)>0);
+}
+
+function tileGradientForSkin(t,y,h){
+  const skin=shopState.equippedTile||"classicTiles";
+  const gr=ctx.createLinearGradient(0,y,0,y+h);
+  if(t.gold || skin==="goldTiles"){
+    gr.addColorStop(0,"#fff1ad");gr.addColorStop(.42,"#ffd66b");gr.addColorStop(1,"#b87509");
+  }else if(skin==="neonTiles"){
+    gr.addColorStop(0,"#67e8f9");gr.addColorStop(.50,"#7c3aed");gr.addColorStop(1,"#150326");
+  }else if(fever>=100){
+    gr.addColorStop(0,"#ff8af0");gr.addColorStop(.45,"#7d5cff");gr.addColorStop(1,"#12021f");
+  }else{
+    // Classic Piano Tiles look: almost-black, simple, readable.
+    gr.addColorStop(0,"#2b2f39");
+    gr.addColorStop(.18,"#111827");
+    gr.addColorStop(1,"#05070b");
+  }
+  return gr;
+}
+function feverColors(){
+  const skin=shopState.equippedFever||"classicFever";
+  if(skin==="goldFever") return ["rgba(255,214,107,.22)","rgba(251,146,60,.18)","rgba(255,255,255,.12)"];
+  if(skin==="cyberFever") return ["rgba(34,211,238,.20)","rgba(168,85,247,.18)","rgba(236,72,153,.16)"];
+  return ["rgba(52,200,255,.13)","rgba(255,75,200,.13)","rgba(112,92,255,.10)"];
+}
+function drawTile(t){
+  const r=tileRect(t),scale=t.scale;
+  t.scale+=(1-t.scale)*.20;
+  const cx=r.x+r.w/2,cy=r.y+r.h/2;
+  const x=cx-r.w*scale/2,y=cy-r.h*scale/2,w=r.w*scale,h=r.h*scale;
+  const color=t.gold?"#ffd66b":fever>=100?"#ff4bc8":"#111827";
+
+  ctx.save();
+  ctx.globalAlpha=t.hit&&!t.long?Math.max(0,t.glow):1;
+  ctx.shadowBlur=t.gold?14:(feverMode?16:8);
+  ctx.shadowColor=t.gold?"rgba(255,214,107,.50)":feverMode?"rgba(255,75,200,.42)":"rgba(15,23,42,.22)";
+
+  // Sharper, taller Piano Tiles-style tile.
+  roundRect(x+1,y,w-2,h,10);
+  ctx.fillStyle=tileGradientForSkin(t,y,h);
+  ctx.fill();
+
+  // Minimal top shine only; avoid cheap glossy clutter.
+  const shine=ctx.createLinearGradient(x,y,x,y+h*.35);
+  shine.addColorStop(0,"rgba(255,255,255,.18)");
+  shine.addColorStop(1,"rgba(255,255,255,0)");
+  ctx.fillStyle=shine;
+  roundRect(x+1,y,w-2,h,10);
+  ctx.fill();
+
+  ctx.strokeStyle="rgba(255,255,255,.16)";
+  ctx.lineWidth=1;
+  roundRect(x+1,y,w-2,h,10);
+  ctx.stroke();
+
+  // Small hit cue at the bottom edge, not a large decorative strip.
+  ctx.globalAlpha=.75;
+  ctx.fillStyle=t.gold?"rgba(255,255,255,.36)":"rgba(255,255,255,.10)";
+  roundRect(x+w*.18,y+h-9,w*.64,4,99);
+  ctx.fill();
+
+  if(t.long){
+    // Strong visual language for Piano Tiles-style long notes.
+    ctx.globalAlpha=.95;
+    ctx.fillStyle="rgba(255,255,255,.18)";
+    roundRect(x+w*.08,y+12,w*.10,h-24,99);
+    ctx.fill();
+
+    ctx.globalAlpha=.90;
+    ctx.fillStyle=t.gold?"#7c2d12":"rgba(255,255,255,.92)";
+    ctx.font="1000 14px Arial";
+    ctx.textAlign="center";
+    ctx.fillText("HOLD",x+w/2,y+Math.min(44,h*.22));
+
+    ctx.globalAlpha=.64;
+    ctx.font="900 10px Arial";
+    ctx.fillText("PRESS & HOLD",x+w/2,y+Math.min(64,h*.22+18));
+    if(t.longRunCount){
+      ctx.globalAlpha=.58;
+      ctx.fillText(t.longRunCount+" notes",x+w/2,y+Math.min(82,h*.22+36));
+    }
+
+    ctx.globalAlpha=.78;
+    ctx.fillStyle="rgba(255,255,255,.22)";
+    roundRect(x+w*.18,y+h-16,w*.64,6,99);
+    ctx.fill();
+  }
+
+  if(t.glow>0){
+    ctx.globalAlpha=t.glow*.55;
+    ctx.fillStyle=color;
+    roundRect(x+1,y,w-2,h,10);
+    ctx.fill();
+    t.glow-=.09;
+  }
+  ctx.restore();
+}
+function drawFx(dt){for(const r of [...rings]){r.r+=280*dt;r.a-=2.4*dt;ctx.save();ctx.globalAlpha=Math.max(0,r.a);ctx.strokeStyle=r.color;ctx.lineWidth=4;ctx.shadowBlur=10;ctx.shadowColor=r.color;ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,Math.PI*2);ctx.stroke();ctx.restore();if(r.a<=0)rings.splice(rings.indexOf(r),1)}for(const p of [...particles]){p.life-=dt;p.vy+=180*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;ctx.save();ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.color;ctx.shadowBlur=8;ctx.shadowColor=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();ctx.restore();if(p.life<=0)particles.splice(particles.indexOf(p),1)}for(const nf of [...notesFx]){nf.a-=1.8*dt;nf.y+=nf.vy*dt;ctx.save();ctx.globalAlpha=Math.max(0,nf.a);ctx.fillStyle=nf.color;ctx.font="1000 22px Arial";ctx.textAlign="center";ctx.shadowBlur=8;ctx.shadowColor=nf.color;ctx.fillText(nf.text,nf.x,nf.y);ctx.restore();if(nf.a<=0)notesFx.splice(notesFx.indexOf(nf),1)}}
+function draw(dt){drawBg(dt);drawBoard();tiles.sort((a,b)=>a.y-b.y);for(const t of tiles)drawTile(t);drawKeyboard();drawFx(dt)}
+function loop(ts){const dt=Math.min(.033,last?(ts-last)/1000:.016);last=ts;if(running&&!paused&&!counting){elapsed+=dt;if(beat<currentSong.melody.length && ((currentSong.midi && midiShouldSpawnNext(ts)) || (!currentSong.midi && ts-lastSpawn>nextSpawnDelay))){
+      const spawned=spawn();
+      if(spawned) lastSpawn=ts;
+      if(!currentSong.midi){
+        // Step 6: no runaway per-frame acceleration.
+        // The speed eases toward the round target and stays predictable.
+        speed+=(targetSpeed-speed)*.018;
+        gap+=(targetGap-gap)*.014;
+      }
+    }
+    if(currentSong.midi){
+      // MIDI also eases gently so the visual scroll remains stable.
+      speed+=(targetSpeed-speed)*.012;
+    }
+    for(const t of [...tiles]){
+t.y+=speed*dt*((fever>=100 && !currentSong.midi)?1.08:1);
+
+if(autoPlayer && !t.hit && !t.autoHit){
+  const shouldHit = currentSong.midi && t.autoHitTime
+    ? performance.now() >= t.autoHitTime
+    : (t.y+t.h)>=geom().hitY-4;
+  if(shouldHit){
+    t.autoHit=true;
+    const r=tileRect(t);
+    hitTile(t,r.x+r.w/2,geom().hitY);
+  }
+}
+
+if(t.long&&t.held&&((currentSong.midi && t.y>geom().hitY+14) || (!currentSong.midi && (t.y+t.h)>geom().hitY+70))&&!t.complete){
+        t.complete=true;
+        t.holdBonusGiven=true;
+        hitTile(t,tileRect(t).x+tileRect(t).w/2,geom().hitY,"release");
+      }if(t.y>H+45){
+        if(currentSong.midi && autoPlayer && !t.hit && t.autoHitTime && performance.now()<t.autoHitTime+120){
+          t.y=geom().hitY-t.h;
+        }else{
+          tiles.splice(tiles.indexOf(t),1);
+          if(!t.hit) miss(null,null,"You missed a tile.");
+        }
+      }}
+if(startGrace>0)startGrace-=dt;if(fever>=100)fever-=dt*8;else fever=Math.max(0,fever-dt*1.4);if(!roundEnding && beat>=currentSong.melody.length && tiles.length===0 && !counting){
+  if(!currentSong.midi) finishRound();
+  else{
+    const lastBg=(currentSong.midiEvents&&currentSong.midiEvents.length)?currentSong.midiEvents[currentSong.midiEvents.length-1]:currentSong.melody[currentSong.melody.length-1];
+    const doneAt=midiGameStartTime+((lastBg?.time||lastBg?.exactTime||0)*1000)+1200;
+    if(performance.now()>=doneAt) finishRound();
+  }
+}hud()}draw(dt);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+function tap(x,y){if(!running||paused||counting)return;const g=geom();for(let i=tiles.length-1;i>=0;i--){const t=tiles[i],r=tileRect(t);const inRect=x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h;const holdLaneHit=t.long&&x>=r.x&&x<=r.x+r.w&&g.hitY>=r.y-16&&g.hitY<=r.y+r.h+24;if(!t.complete&&(inRect||holdLaneHit)){hitTile(t,x,y);return}}miss(x,y,"Tap black tiles only — not the background.")}
+function releaseHold(){
+  for(const t of tiles){
+    if(t.long&&t.held&&!t.complete){
+      // No penalty for releasing early. Full hold just gives better feedback/bonus.
+      t.held=false;
+      coach("Good tap — hold longer next time for a HOLD bonus.","good");
+    }
+  }
+}
+canvas.addEventListener("pointerdown",e=>{const r=canvas.getBoundingClientRect();tap(e.clientX-r.left,e.clientY-r.top)});
+canvas.addEventListener("pointerup",releaseHold);canvas.addEventListener("pointercancel",releaseHold);
+function startGame(isAuto=false){
+  if(currentSong && currentSong.pack && !isPackUnlocked(currentSong.pack)){
+    const rule=PACK_RULES[currentSong.pack]||PACK_RULES.beginner;
+    coach(rule.name+" is locked. Earn "+rule.required+" total stars.","bad");
+    return;
+  }
+  roundNumber=1;
+  roundScores=[];
+  roundAccuracies=[];
+  roundCombos=[];
+  songFinished=false;
+  startRound(isAuto);
+}
+
+function startRound(isAuto=false){
+  canvas.focus();
+  stopAllMusic();
+  configure();
+  autoPlayer=!!isAuto;feverMode=0;feverNotified=false;superFeverNotified=false;
+  tiles=[];particles=[];rings=[];notesFx=[];keys=[];
+  score=0;combo=0;maxCombo=0;hits=0;misses=0;total=0;elapsed=0;fever=0;beat=0;gameMusicIndex=0;gameChordIndex=0;nextSpawnDelay=gap;lastSpawn=0;last=0;coinsEarned=0;
+  running=true;paused=false;counting=true;roundEnding=false;
+  $("roundComplete").classList.add("hidden");
+  $("feverBadge").classList.add("hidden");phone.classList.remove("feverPulse");if($("feverTrail")){$("feverTrail").classList.remove("on");$("feverTrail").classList.remove("super");}$("splash").classList.add("hidden");$("menu").classList.add("hidden");
+  $("pause").classList.add("hidden");
+  $("over").classList.add("hidden");
+  hud();
+  audio();
+  coach(autoPlayer ? "Auto Player is on: perfect performance demo." : "Round "+roundNumber+" of "+totalRounds+": each round is faster and more challenging.","good");
+  let n3=3;
+  $("countdown").classList.remove("hidden");
+  $("countNum").textContent=n3;
+  $("countText").textContent="Round "+roundNumber;
+  tone(440,.16,.08);
+  const timer=setInterval(()=>{
+    n3--;
+    if(n3>0){
+      $("countNum").textContent=n3;
+      $("countText").textContent=n3===2?"Get ready":"Speed is rising";
+      $("countNum").style.animation="none"; void $("countNum").offsetWidth; $("countNum").style.animation="";
+      tone(440+n3*70,.14,.08);
+    }else{
+      clearInterval(timer);
+      $("countNum").textContent="GO!";
+      $("countText").textContent="Round "+roundNumber;
+      chord(["C4","E4","G4"],.28,.05);
+      setTimeout(()=>{
+        $("countdown").classList.add("hidden");
+        canvas.focus();
+        coach(autoPlayer ? "Auto Player is performing round "+roundNumber+" 🎹" : "Round "+roundNumber+": use D F J K, 1–4, or tap 🎹","good");
+        counting=false;
+        if(currentSong.midi){
+          // Hybrid timing: full MIDI starts in the background, while the first
+          // selected gameplay tile has enough travel time to meet the hit line.
+          const visualLead=midiSpawnLeadMs;
+          midiGameStartTime=performance.now()+visualLead;
+          lastSpawn=performance.now();
+          playMidiArrangement(currentSong,.50,visualLead);
+        }else{
+          lastSpawn=performance.now()-gap+260;
+        }
+      },700);
+    }
+  },850);
+}
+
+function finishRound(){
+  if(roundEnding) return;
+  roundEnding=true;
+  running=false;paused=false;counting=false;
+  stopAllMusic();
+  tiles=[];
+
+  const acc=total?Math.round(hits/total*100):0;
+  roundScores.push(score);
+  roundAccuracies.push(acc);
+  roundCombos.push(maxCombo);
+  if(acc>=92) unlockAchievement("perfect_round");
+  if(roundNumber===4) unlockAchievement("round_4_clear");
+
+  if(roundNumber<totalRounds){
+    const msg = acc>=92 ? "PERFECT ROUND!" : acc>=75 ? "GREAT ROUND!" : "ROUND CLEAR!";
+    const color = acc>=92 ? "#ffd66b" : acc>=75 ? "#42f5b3" : "#34c8ff";
+    judge(msg,color);
+    coach("Round "+roundNumber+" clear! Round "+(roundNumber+1)+" is faster.","gold");
+    roundNumber++;
+    setTimeout(()=>startRound(autoPlayer),1150);
+    return;
+  }
+
+  showFinalSummary();
+}
+
+function showFinalSummary(){
+  try{
+    songFinished=true;
+    const totalScore=roundScores.reduce((a,b)=>a+b,0);
+    const avgAcc=roundAccuracies.length ? Math.round(roundAccuracies.reduce((a,b)=>a+b,0)/roundAccuracies.length) : 0;
+    const bestCombo=roundCombos.length ? Math.max(...roundCombos) : 0;
+    const stars=avgAcc>=92?3:avgAcc>=75?2:avgAcc>=50?1:0;
+
+    completeDailyMissionIfNeeded({
+      totalScore,
+      avgAcc,
+      bestCombo,
+      stars,
+      clearedRound4: roundScores.length>=4
+    });
+
+    unlockAchievement("first_song");
+    claimDailyReward();
+    if(stars===3) unlockAchievement("three_stars");
+
+    coinsEarned+=Math.floor(totalScore/60)+stars*8;
+    coins+=coinsEarned;
+    const previousBest=best;
+    best=Math.max(best,totalScore);
+
+    localStorage.setItem("realMelodyCoins",coins);
+    localStorage.setItem("realMelodyBest",best);
+
+    const prev=songProgress[currentSong.id]||{stars:0,best:0,combo:0};
+    songProgress[currentSong.id]={
+      stars:Math.max(prev.stars||0,stars),
+      best:Math.max(prev.best||0,totalScore),
+      combo:Math.max(prev.combo||0,bestCombo)
+    };
+    localStorage.setItem("realMelodySongProgress",JSON.stringify(songProgress));
+    checkPackUnlockRewards();
+    renderProgressPanel();
+
+    saveLeaderboard(currentSong.id,{
+      score:totalScore,
+      stars,
+      accuracy:avgAcc,
+      combo:bestCombo,
+      date:new Date().toLocaleDateString()
+    });
+
+    $("stars").innerHTML=[0,1,2].map(i=>`<span>${i<stars?"★":"☆"}</span>`).join("");
+    $("recordBadge").classList.toggle("hidden", totalScore<=previousBest);
+    $("finalScore").textContent=totalScore;
+    $("finalCombo").textContent=bestCombo;
+    $("accuracy").textContent=avgAcc+"%";
+    $("coinsEarned").textContent=coinsEarned;
+    $("bestEnd").textContent=best;
+    $("friendlyEnd").textContent=stars===3
+      ?"Outstanding! You mastered all speed rounds 🎉"
+      :stars===2
+        ?"Great performance! You cleared the challenge with strong timing."
+        :stars===1
+          ?"Good job! You finished the challenge."
+          :"You completed the challenge — keep practicing for more stars.";
+    $("roundBreakdown").innerHTML=roundScores.map((s,i)=>`<div class="roundRow">
+      <b>Round ${i+1}</b>
+      <span>${roundAccuracies[i]||0}% accuracy · ${roundCombos[i]||0} combo</span>
+      <b>${s}</b>
+    </div>`).join("");
+    $("endTip").textContent=unlockedThisRun.length
+      ? "New achievements unlocked: "+unlockedThisRun.length
+      : "Your score was saved. Check today’s Daily Mission for bonus progress.";
+    unlockedThisRun=[];
+
+    try{ renderSongCatalog(); renderAchievements(); renderLeaderboard(); }catch(e){ console.warn(e); }
+    hud();
+    $("over").classList.remove("hidden");
+  }catch(e){
+    console.error("Final summary failed", e);
+    // Emergency fallback so the user is never stuck.
+    $("finalScore").textContent=score||0;
+    $("finalCombo").textContent=maxCombo||0;
+    $("accuracy").textContent="0%";
+    $("coinsEarned").textContent=coinsEarned||0;
+    $("bestEnd").textContent=best||0;
+    $("friendlyEnd").textContent="Round complete!";
+    $("over").classList.remove("hidden");
+  }
+}
+
+function togglePause(){
+  if(!running||counting)return;
+  paused=!paused;
+  $("pause").classList.toggle("hidden",!paused);
+  if(paused) stopGameMusic();
+  else startGameMusicLoop();
+}
+function backMenu(){running=false;paused=false;counting=false;stopAllMusic();tiles=[];$("pause").classList.add("hidden");$("over").classList.add("hidden");$("roundComplete").classList.add("hidden");renderSongCatalog();updateSongMeta();renderAchievements();renderLeaderboard();renderDailyChallenge();renderDailyMission();renderProgressPanel();renderShop();$("menu").classList.remove("hidden");hud()}
+
+
+const ACHIEVEMENTS=[
+  {id:"first_song",icon:"🎵",title:"First Song Clear",desc:"Complete your first full song challenge."},
+  {id:"combo_50",icon:"🔥",title:"50 Combo",desc:"Reach a 50 combo."},
+  {id:"combo_100",icon:"⚡",title:"100 Combo",desc:"Reach a 100 combo."},
+  {id:"three_stars",icon:"🏆",title:"3 Stars",desc:"Earn 3 stars on any song."},
+  {id:"perfect_round",icon:"✨",title:"Perfect Round",desc:"Finish a round with 92%+ accuracy."},
+  {id:"round_4_clear",icon:"🚀",title:"Round 4 Clear",desc:"Complete the fourth speed round."}
+];
+function unlockAchievement(id){
+  try{
+    if(achievements[id]) return;
+    achievements[id]=true;
+    unlockedThisRun.push(id);
+    localStorage.setItem("realMelodyAchievements",JSON.stringify(achievements));
+    const a=ACHIEVEMENTS.find(x=>x.id===id);
+    if(a) coach("Achievement unlocked: "+a.title+" "+a.icon,"gold");
+  }catch(e){
+    console.warn("Achievement unlock failed", e);
+  }
+}
+function renderAchievements(){
+  const panel=$("achievementsPanel");
+  if(!panel) return;
+  panel.innerHTML=ACHIEVEMENTS.map(a=>{
+    const u=!!achievements[a.id];
+    return `<div class="achievement ${u?"":"locked"}">
+      <div class="achIcon">${a.icon}</div>
+      <div><div class="achTitle">${a.title}</div><div class="achDesc">${a.desc}</div></div>
+      <div class="achStatus">${u?"Unlocked":"Locked"}</div>
+    </div>`;
+  }).join("");
+}
+function saveLeaderboard(songId,entry){
+  try{
+    if(!leaderboard[songId]) leaderboard[songId]=[];
+    leaderboard[songId].push(entry);
+    leaderboard[songId]=leaderboard[songId].sort((a,b)=>b.score-a.score).slice(0,5);
+    localStorage.setItem("realMelodyLeaderboard",JSON.stringify(leaderboard));
+  }catch(e){
+    console.warn("Leaderboard save failed", e);
+  }
+}
+function renderLeaderboard(){
+  const panel=$("leaderboardPanel");
+  if(!panel) return;
+  const songId=($("songSelect")&&$("songSelect").value)||(currentSong&&currentSong.id)||"default";
+  const rows=leaderboard[songId]||[];
+  panel.innerHTML=rows.length?rows.map((r,i)=>`<div class="leaderRow">
+    <div class="rank">#${i+1}</div>
+    <div><div class="recordTitle">${r.score} points</div><div class="recordMeta">${r.stars} stars · ${r.accuracy}% accuracy · ${r.combo} combo</div></div>
+    <div class="achStatus">${r.date}</div>
+  </div>`).join(""):'<p class="tip">No records for this song yet. Complete a challenge to create one.</p>';
+}
+function toggleAchievements(){
+  $("achievementsPanel").classList.toggle("hidden");
+  $("leaderboardPanel").classList.add("hidden");
+  renderAchievements();
+}
+function toggleLeaderboard(){
+  $("leaderboardPanel").classList.toggle("hidden");
+  $("achievementsPanel").classList.add("hidden");
+  renderLeaderboard();
+}
+
+
+
+const DAILY_MISSIONS=[
+  {id:"combo50",title:"Reach 50 Combo",desc:"Build a combo of at least 50 in any round.",reward:20,type:"combo",target:50},
+  {id:"twoStars",title:"Earn 2 Stars",desc:"Finish a challenge with at least 2 stars.",reward:25,type:"stars",target:2},
+  {id:"round4",title:"Clear Round 4",desc:"Complete all 4 rounds of a song.",reward:30,type:"round4",target:1},
+  {id:"score300",title:"Score 300+",desc:"Earn at least 300 total points.",reward:20,type:"score",target:300},
+  {id:"accuracy75",title:"75% Accuracy",desc:"Finish with average accuracy of 75% or higher.",reward:25,type:"accuracy",target:75}
+];
+
+function todayKey(){
+  return new Date().toISOString().slice(0,10);
+}
+function getDailyMission(){
+  const d=new Date();
+  const idx=(d.getDate()+d.getMonth()*3+d.getFullYear())%DAILY_MISSIONS.length;
+  return DAILY_MISSIONS[idx];
+}
+function renderDailyMission(){
+  const el=$("dailyMission");
+  if(!el) return;
+  const mission=getDailyMission();
+  activeDailyMission=mission;
+  const today=todayKey();
+  const done=dailyMissionState.date===today && dailyMissionState.id===mission.id;
+  el.classList.toggle("complete",done);
+  el.innerHTML=`<b>📌 Daily Mission: ${mission.title}</b>
+    <div class="missionLine">${mission.desc}</div>
+    <div class="missionLine">Reward: ${mission.reward} coins</div>
+    <span class="missionStatus">${done?"✅ Completed today":"⏳ Not completed"}</span>`;
+}
+function completeDailyMissionIfNeeded(summary){
+  const mission=getDailyMission();
+  const today=todayKey();
+  if(dailyMissionState.date===today && dailyMissionState.id===mission.id) return;
+
+  let passed=false;
+  if(mission.type==="combo") passed=(summary.bestCombo||0)>=mission.target;
+  if(mission.type==="stars") passed=(summary.stars||0)>=mission.target;
+  if(mission.type==="round4") passed=!!summary.clearedRound4;
+  if(mission.type==="score") passed=(summary.totalScore||0)>=mission.target;
+  if(mission.type==="accuracy") passed=(summary.avgAcc||0)>=mission.target;
+
+  if(!passed) return;
+
+  dailyMissionState={date:today,id:mission.id};
+  coins+=mission.reward;
+  coinsEarned+=mission.reward;
+  localStorage.setItem("realMelodyCoins",coins);
+  localStorage.setItem("realMelodyDailyMission",JSON.stringify(dailyMissionState));
+  renderDailyMission();
+  coach("Daily mission complete: +"+mission.reward+" coins","gold");
+}
+
+function getDailySong(){
+  const idx=(new Date().getDate()+new Date().getMonth())%songs.length;
+  return songs[idx];
+}
+function renderDailyChallenge(){
+  const song=getDailySong();
+  const today=new Date().toISOString().slice(0,10);
+  const done=dailyState.date===today;
+  const reward=25;
+  const el=document.getElementById("dailyCard");
+  if(!el) return;
+  el.innerHTML=`<b>🎯 Daily Challenge</b><br>
+  Song: ${song.name}<br>
+  Reward: ${reward} coins<br>
+  Status: ${done?"✅ Completed":"⏳ Not completed"}`;
+  renderDailyMission();
+}
+function claimDailyReward(){
+  const today=new Date().toISOString().slice(0,10);
+  if(dailyState.date===today) return;
+  dailyState.date=today;
+  dailyState.reward=25;
+  coins+=25;
+  localStorage.setItem("realMelodyCoins",coins);
+  localStorage.setItem("realMelodyDaily",JSON.stringify(dailyState));
+  renderDailyChallenge();
+}
+
+
+const SHOP_ITEMS=[
+  {id:"classicTiles",type:"tile",icon:"⬛",title:"Classic Tiles",desc:"Original black glossy tile style.",price:0},
+  {id:"goldTiles",type:"tile",icon:"🟨",title:"Gold Tiles",desc:"Warm golden tiles for bonus-like gameplay.",price:80},
+  {id:"neonTiles",type:"tile",icon:"🟪",title:"Neon Tiles",desc:"Bright purple-blue arcade tiles.",price:120},
+  {id:"defaultTheme",type:"theme",icon:"☁️",title:"Cloud Theme",desc:"Clean bright default background.",price:0},
+  {id:"neonTheme",type:"theme",icon:"🌌",title:"Neon Night",desc:"Darker arcade-style stage.",price:140},
+  {id:"sunsetTheme",type:"theme",icon:"🌅",title:"Sunset Glow",desc:"Warm soft stage background.",price:110},
+  {id:"auroraTheme",type:"theme",icon:"🌈",title:"Aurora Stage",desc:"Fresh blue-green stage background.",price:160},
+  {id:"classicFever",type:"fever",icon:"💫",title:"Classic Fever",desc:"Original Fever glow effect.",price:0},
+  {id:"goldFever",type:"fever",icon:"✨",title:"Golden Fever",desc:"Warmer Fever visuals.",price:100},
+  {id:"cyberFever",type:"fever",icon:"⚡",title:"Cyber Fever",desc:"High-energy neon Fever visuals.",price:130}
+];
+
+function ownsItem(id){ return (shopState.owned||[]).includes(id); }
+function saveShop(){
+  localStorage.setItem("realMelodyShop",JSON.stringify(shopState));
+}
+function itemEquipped(item){
+  if(item.type==="tile") return shopState.equippedTile===item.id;
+  if(item.type==="theme") return shopState.equippedTheme===item.id;
+  if(item.type==="fever") return shopState.equippedFever===item.id;
+  return false;
+}
+function equipItem(item){
+  if(!ownsItem(item.id)) return;
+  if(item.type==="tile") shopState.equippedTile=item.id;
+  if(item.type==="theme") shopState.equippedTheme=item.id;
+  if(item.type==="fever") shopState.equippedFever=item.id;
+  saveShop();
+  applyShopTheme();
+  renderShop();
+  coach(item.title+" equipped.","good");
+}
+function buyOrEquip(id){
+  const item=SHOP_ITEMS.find(x=>x.id===id);
+  if(!item) return;
+  if(ownsItem(id)){
+    equipItem(item);
+    return;
+  }
+  if(coins<item.price){
+    coach("Not enough coins for "+item.title+".","bad");
+    return;
+  }
+  coins-=item.price;
+  shopState.owned=[...(shopState.owned||[]),id];
+  saveShop();
+  localStorage.setItem("realMelodyCoins",coins);
+  equipItem(item);
+  hud();
+}
+function applyShopTheme(){
+  document.body.classList.remove("themeNeon","themeSunset","themeAurora");
+  if(shopState.equippedTheme==="neonTheme") document.body.classList.add("themeNeon");
+  if(shopState.equippedTheme==="sunsetTheme") document.body.classList.add("themeSunset");
+  if(shopState.equippedTheme==="auroraTheme") document.body.classList.add("themeAurora");
+}
+function renderShop(){
+  const panel=$("shopPanel");
+  if(!panel) return;
+  panel.innerHTML=SHOP_ITEMS.map(item=>{
+    const owned=ownsItem(item.id);
+    const equipped=itemEquipped(item);
+    const btnText=equipped?"Equipped":owned?"Equip":item.price+" coins";
+    const cls=equipped?"equipped":(!owned&&coins<item.price)?"locked":"";
+    return `<div class="shopItem">
+      <div class="shopIcon">${item.icon}</div>
+      <div>
+        <div class="shopTitle">${item.title}</div>
+        <div class="shopDesc">${item.desc}</div>
+      </div>
+      <button class="shopBtn ${cls}" onclick="buyOrEquip('${item.id}')">${btnText}</button>
+    </div>`;
+  }).join("");
+}
+function toggleShop(){
+  $("shopPanel").classList.toggle("hidden");
+  $("progressPanel").classList.add("hidden");
+  $("achievementsPanel").classList.add("hidden");
+  $("leaderboardPanel").classList.add("hidden");
+  renderShop();
+}
+
+const PACK_RULES={
+  beginner:{name:"Beginner Pack",required:0,reward:0},
+  holiday:{name:"Holiday Pack",required:6,reward:20},
+  classical:{name:"Classical Pack",required:12,reward:35},
+  midi:{name:"MIDI Imports",required:0,reward:0}
+};
+const PLAYER_RANKS=[
+  {name:"Beginner Pianist",stars:0},
+  {name:"Rising Performer",stars:8},
+  {name:"Concert Player",stars:18},
+  {name:"Virtuoso",stars:30},
+  {name:"Piano Master",stars:45}
+];
+
+function totalStars(){
+  return Object.values(songProgress||{}).reduce((sum,p)=>sum+(p.stars||0),0);
+}
+function maxPossibleStars(){
+  return songs.length*3;
+}
+function playerRank(stars){
+  let rank=PLAYER_RANKS[0].name;
+  for(const r of PLAYER_RANKS){
+    if(stars>=r.stars) rank=r.name;
+  }
+  return rank;
+}
+function isPackUnlocked(pack){
+  if(pack==="midi") return true;
+  const rule=PACK_RULES[pack]||PACK_RULES.beginner;
+  return totalStars()>=rule.required;
+}
+function newlyUnlockedPacks(){
+  const stars=totalStars();
+  const unlocked=progressionState.unlockedPacks||{};
+  const newly=[];
+  for(const [pack,rule] of Object.entries(PACK_RULES)){
+    if(stars>=rule.required && !unlocked[pack]){
+      unlocked[pack]=true;
+      newly.push({pack,rule});
+    }
+  }
+  progressionState.unlockedPacks=unlocked;
+  localStorage.setItem("realMelodyProgression",JSON.stringify(progressionState));
+  return newly;
+}
+function showUnlockToast(title,subtitle){
+  const old=document.querySelector(".unlockToast");
+  if(old) old.remove();
+  const d=document.createElement("div");
+  d.className="unlockToast";
+  d.innerHTML=`<b>${title}</b><span>${subtitle}</span>`;
+  phone.appendChild(d);
+  setTimeout(()=>d.remove(),1850);
+}
+function checkPackUnlockRewards(){
+  const packs=newlyUnlockedPacks();
+  for(const item of packs){
+    if(item.rule.reward>0){
+      coins+=item.rule.reward;
+      localStorage.setItem("realMelodyCoins",coins);
+      showUnlockToast("🔓 "+item.rule.name+" Unlocked!","+ "+item.rule.reward+" coins bonus");
+      coach(item.rule.name+" unlocked!","gold");
+    }
+  }
+}
+function packStars(pack){
+  return songs
+    .filter(s=>s.pack===pack)
+    .reduce((sum,s)=>sum+((songProgress[s.id]||{}).stars||0),0);
+}
+function packMaxStars(pack){
+  return songs.filter(s=>s.pack===pack).length*3;
+}
+function completionPercent(){
+  const max=maxPossibleStars();
+  return max?Math.round(totalStars()/max*100):0;
+}
+function renderProgressPanel(){
+  const el=$("progressPanel");
+  if(!el) return;
+  const stars=totalStars();
+  const max=maxPossibleStars();
+  const pct=completionPercent();
+  const rank=playerRank(stars);
+  const bestComboAll=Math.max(0,...Object.values(songProgress||{}).map(p=>p.combo||0));
+
+  const packs=Object.entries(PACK_RULES).map(([pack,rule])=>{
+    const open=isPackUnlocked(pack);
+    const ps=packStars(pack), pm=packMaxStars(pack);
+    return `<div class="progressStat">
+      <small>${rule.name}</small>
+      <b>${open?"Unlocked":"Locked"}</b>
+      <div class="songBest">${ps}/${pm} stars ${open?"":"· needs "+rule.required}</div>
+    </div>`;
+  }).join("");
+
+  el.innerHTML=`<h3>🏅 Player Progress</h3>
+    <div class="progressStats">
+      <div class="progressStat"><small>Total Stars</small><b>${stars}/${max}</b></div>
+      <div class="progressStat"><small>Rank</small><b>${rank}</b></div>
+      <div class="progressStat"><small>Coins</small><b>${coins}</b></div>
+      <div class="progressStat"><small>Best Combo</small><b>${bestComboAll}</b></div>
+    </div>
+    <div class="globalBar"><span style="width:${pct}%"></span></div>
+    <div class="songBest">${pct}% complete</div>
+    <div class="progressStats">${packs}</div>`;
+}
+function toggleProgress(){
+  $("progressPanel").classList.toggle("hidden");
+  $("achievementsPanel").classList.add("hidden");
+  $("leaderboardPanel").classList.add("hidden");
+  renderProgressPanel();
+}
+
+function packClass(song){
+  if(song.pack==="classical") return "classical";
+  if(song.pack==="holiday") return "holiday";
+  if(song.pack==="midi") return "beginner";
+  return "beginner";
+}
+function starsText(stars){
+  return "★".repeat(stars)+"☆".repeat(3-stars);
+}
+function setPack(pack){
+  if(pack!=="all" && !isPackUnlocked(pack)){
+    const rule=PACK_RULES[pack]||PACK_RULES.beginner;
+    coach(rule.name+" unlocks at "+rule.required+" total stars.","bad");
+    return;
+  }
+  currentPack=pack;
+  $("packAll").classList.toggle("selected",pack==="all");
+  $("packBeginner").classList.toggle("selected",pack==="beginner");
+  $("packClassical").classList.toggle("selected",pack==="classical");
+  $("packHoliday").classList.toggle("selected",pack==="holiday");
+  $("packMidi").classList.toggle("selected",pack==="midi");
+  renderSongCatalog();
+  renderProgressPanel();
+}
+function populateSongs(){
+  const sel=$("songSelect");
+  sel.innerHTML="";
+  for(const s of songs){
+    const opt=document.createElement("option");
+    opt.value=s.id;
+    opt.textContent=s.name+" — "+s.composer;
+    sel.appendChild(opt);
+  }
+  renderSongCatalog();
+  updateSongMeta();
+}
+function renderSongCatalog(){
+  const catalog=$("songCatalog");
+  const selected=$("songSelect").value || songs[0].id;
+  const filtered=songs.filter(s=>currentPack==="all"||s.pack===currentPack);
+  catalog.innerHTML="";
+  filtered.forEach(s=>{
+    const progress=songProgress[s.id]||{stars:0,best:0,combo:0};
+    const card=document.createElement("div");
+    const unlocked=isPackUnlocked(s.pack);
+    card.className="songCard"+(s.midi?" midiSong":"")+(s.id===selected?" selected":"")+(unlocked?"":" locked");
+    card.onclick=()=>{
+      if(!isPackUnlocked(s.pack)){
+        const rule=PACK_RULES[s.pack]||PACK_RULES.beginner;
+        coach(rule.name+" is locked. Earn "+rule.required+" total stars.","bad");
+        return;
+      }
+      $("songSelect").value=s.id;
+      currentSong=songs.find(x=>x.id===s.id)||songs[0];
+      updateSongMeta();
+      renderSongCatalog();renderLeaderboard();renderProgressPanel();
+    };
+    card.innerHTML=`
+      <div class="cover ${packClass(s)}">${s.icon||"🎵"}</div>
+      <div>
+        <div class="songTitle">${s.name}</div>
+        <div class="songInfo">${s.composer} · ${s.bpm} BPM · ${s.melody.length} notes</div>
+        <div class="songBest">Best: ${progress.best||0} · Combo: ${progress.combo||0}</div>
+        <div class="${unlocked?'packLock packOpen':'packLock'}">${unlocked?'Unlocked':'Locked · '+(PACK_RULES[s.pack]||PACK_RULES.beginner).required+' stars'}</div>
+        ${s.midi?`<button class="deleteMidiBtn" data-song-id="${s.id}">Delete MIDI</button>`:""}
+      </div>
+      <div class="songStars">${starsText(progress.stars||0)}</div>
+    `;
+    const del=card.querySelector(".deleteMidiBtn");
+    if(del){
+      del.onclick=(ev)=>{
+        ev.stopPropagation();
+        deleteMidiSong(s.id);
+      };
+    }
+    catalog.appendChild(card);
+  });
+}
+function updateSongMeta(){
+  currentSong=songs.find(x=>x.id===$("songSelect").value)||songs[0];
+  const noteCount=currentSong.melody.length;
+  const p=songProgress[currentSong.id]||{stars:0,best:0,combo:0};
+  $("songMeta").innerHTML=`<b>${currentSong.name}</b><br>${currentSong.composer} · ${currentSong.bpm} BPM · ${noteCount} melody notes<br>Best: ${p.best||0} · Stars: ${starsText(p.stars||0)}<br>Hybrid MIDI mode: full song plays in the background; Piano Tiles mode: mostly single tap tiles; HOLD appears only rarely for true sustained notes.`;
+}
+
+$("tapStartBtn").onclick=()=>{
+  const sp=$("splash");
+  sp.classList.add("hideSplash");
+  setTimeout(()=>sp.classList.add("hidden"),520);
+  coach("Choose a song or start the Daily Challenge.","good");
+};
+$("songSelect").addEventListener("change",()=>{updateSongMeta();renderSongCatalog();stopPreview()});
+$("packAll").onclick=()=>setPack("all");
+$("packBeginner").onclick=()=>setPack("beginner");
+$("packClassical").onclick=()=>setPack("classical");
+$("packHoliday").onclick=()=>setPack("holiday");
+$("packMidi").onclick=()=>setPack("midi");
+$("achievementsBtn").onclick=toggleAchievements;
+$("leaderboardBtn").onclick=toggleLeaderboard;
+$("progressBtn").onclick=toggleProgress;
+$("shopBtn").onclick=toggleShop;
+$("dailyBtn").onclick=()=>{
+  const s=getDailySong();
+  $("songSelect").value=s.id;
+  updateSongMeta();
+  startGame(false);
+};
+$("previewBtn").onclick=()=>{updateSongMeta();coach("Preview plays the song. Gameplay uses a classic Piano Tiles visual map.","gold");playRealSongPreview(false)};
+$("stopPreviewBtn").onclick=()=>{stopAllMusic();coach("Sound stopped.","good")};
+
+$("startBtn").onclick=()=>startGame(false);$("autoPlayBtn").onclick=()=>startGame(true);$("againBtn").onclick=()=>startGame(autoPlayer);$("restartBtn").onclick=()=>startGame(autoPlayer);$("pauseBtn").onclick=togglePause;$("resumeBtn").onclick=togglePause;$("menuBtn").onclick=backMenu;$("homeBtn").onclick=backMenu;
+$("songMode").onclick=()=>{mode="song";$("songMode").classList.add("selected");$("endlessMode").classList.remove("selected");coach("Real Songs mode selected.","gold")};
+$("endlessMode").onclick=()=>{mode="endless";$("endlessMode").classList.add("selected");$("songMode").classList.remove("selected");coach("Endless mode selected.","gold")};
+
+
+
+
+function keyToLane(e){
+  // Use physical keyboard codes so it works even when the keyboard language is Hebrew.
+  const byCode={
+    KeyD:0, KeyF:1, KeyJ:2, KeyK:3,
+    Digit1:0, Digit2:1, Digit3:2, Digit4:3,
+    Numpad1:0, Numpad2:1, Numpad3:2, Numpad4:3,
+    ArrowLeft:0, ArrowDown:1, ArrowUp:2, ArrowRight:3
+  };
+  if(Object.prototype.hasOwnProperty.call(byCode,e.code)) return byCode[e.code];
+
+  // Fallback for English layouts.
+  const key=(e.key||"").toLowerCase();
+  const byKey={d:0,f:1,j:2,k:3,"1":0,"2":1,"3":2,"4":3};
+  if(Object.prototype.hasOwnProperty.call(byKey,key)) return byKey[key];
+
+  return -1;
+}
+
+function pressLaneFromKeyboard(lane){
+  if(!running || paused || counting) return;
+
+  const g=geom();
+  const x=g.left+lane*g.laneW+g.laneW/2;
+  const y=g.hitY;
+
+  // Visual feedback on the piano key even before hit/miss judgment.
+  pressKey(lane,"#34c8ff");
+
+  const candidate=tiles
+    .filter(t=>!t.complete && t.lane===lane)
+    .sort((a,b)=>Math.abs((a.y+a.h)-g.hitY)-Math.abs((b.y+b.h)-g.hitY))[0];
+
+  if(candidate && Math.abs((candidate.y+candidate.h)-g.hitY)<170){
+    hitTile(candidate,x,y);
+  }else{
+    miss(x,y,"Wrong timing or empty lane — keep playing.");
+  }
+}
+
+function handleGameKeyDown(e){
+  if(e.code==="Space" || e.key===" "){
+    e.preventDefault();
+    togglePause();
+    return false;
+  }
+
+  const lane=keyToLane(e);
+  if(lane>=0){
+    e.preventDefault();
+    e.stopPropagation();
+    pressLaneFromKeyboard(lane);
+    return false;
+  }
+}
+
+function handleGameKeyUp(e){
+  const lane=keyToLane(e);
+  if(lane<0) return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  for(const t of tiles){
+    if(t.long&&t.held&&!t.complete&&t.lane===lane){
+      t.held=false;
+      coach("Released. No penalty — hold to the end for bonus points.","good");
+    }
+  }
+  return false;
+}
+
+// Register on several targets to avoid focus issues.
+window.addEventListener("keydown", handleGameKeyDown, true);
+document.addEventListener("keydown", handleGameKeyDown, true);
+canvas.addEventListener("keydown", handleGameKeyDown, true);
+
+window.addEventListener("keyup", handleGameKeyUp, true);
+document.addEventListener("keyup", handleGameKeyUp, true);
+canvas.addEventListener("keyup", handleGameKeyUp, true);
+
+function showComboMilestone(value){
+  if(value%10!==0 && value!==25) return;
+  document.querySelectorAll(".comboBanner").forEach(el=>el.remove());
+  const d=document.createElement("div");
+  d.className="comboBanner classic";
+  d.textContent=value+" COMBO";
+  phone.appendChild(d);
+  setTimeout(()=>d.remove(),760);
+}
+
+
+function updateFeverMode(){
+  const old=feverMode;
+  feverMode = combo>=100 ? 2 : combo>=50 ? 1 : 0;
+
+  const badge=$("feverBadge");
+  const trail=$("feverTrail");
+
+  if(feverMode===0){
+    badge.classList.add("hidden");
+    phone.classList.remove("feverPulse");
+    if(trail){trail.classList.remove("on");trail.classList.remove("super");}
+    return;
+  }
+
+  badge.classList.remove("hidden");
+  phone.classList.add("feverPulse");
+  if(trail){trail.classList.add("on");trail.classList.toggle("super",feverMode===2);}
+
+  if(feverMode===2){
+    badge.textContent="SUPER FEVER";
+    badge.classList.add("super");
+    if(!superFeverNotified){
+      superFeverNotified=true;
+      judge("SUPER FEVER","#ffd66b");
+      coach("Super Fever! Score multiplier x3","gold");
+    }
+  }else{
+    badge.textContent="FEVER";
+    badge.classList.remove("super");
+    if(!feverNotified){
+      feverNotified=true;
+      judge("FEVER MODE","#ff4bc8");
+      coach("Fever Mode! Score multiplier x2","gold");
+    }
+  }
+}
+
+function feverMultiplier(){
+  return feverMode===2 ? 3 : feverMode===1 ? 2 : 1;
+}
+
+initMidiSongs();
+
+$("midiInput").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file) return;
+  try{
+    const buf=await file.arrayBuffer();
+    const song=parseMidiToSong(buf,file.name);
+    loadMidiSong(song);
+    e.target.value="";
+  }catch(err){
+    console.error(err);
+    coach("Could not read this MIDI: "+err.message,"bad");
+  }
+});
+
+populateSongs();renderDailyChallenge();renderDailyMission();renderProgressPanel();renderShop();applyShopTheme();renderAchievements();renderLeaderboard();hud();
+</script>
+</body>
+</html>
