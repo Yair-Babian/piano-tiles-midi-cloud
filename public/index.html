@@ -3396,5 +3396,20 @@ if($("onlineGenreFilter")) $("onlineGenreFilter").addEventListener("change",rend
 if($("clearOnlineSearchBtn")) $("clearOnlineSearchBtn").onclick=clearOnlineMidiSearch;
 renderDailyChallenge();renderDailyMission();renderProgressPanel();renderShop();applyShopTheme();renderAchievements();renderLeaderboard();hud();
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const tap = document.getElementById("tapStartBtn");
+  const splash = document.getElementById("splash");
+  const game = document.getElementById("game");
+
+  if (tap && splash) {
+    tap.onclick = function () {
+      splash.classList.add("hidden");
+      splash.style.display = "none";
+      if (game) game.focus();
+    };
+  }
+});
+</script>
 </body>
 </html>
