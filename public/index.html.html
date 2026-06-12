@@ -513,6 +513,112 @@ select{width:100%;margin-top:9px;text-align:center}.tip{color:#64748b;font-size:
   letter-spacing:.8px;
 }
 
+
+/* Step 16: Local MIDI catalog search */
+.searchPanel{
+  margin-top:12px;
+  padding:13px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(232,245,255,.78));
+  box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(255,255,255,.86);
+  text-align:left;
+}
+.searchPanel b{color:#0f172a}
+.searchPanel input{
+  width:100%;
+  margin-top:9px;
+  padding:12px 13px;
+  border-radius:16px;
+  border:0;
+  background:white;
+  color:#0f172a;
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,.20);
+  font-weight:900;
+  outline:none;
+}
+.searchResults{display:grid;gap:8px;margin-top:10px;max-height:290px;overflow:auto;padding-right:2px}
+.catalogResult{
+  display:grid;
+  grid-template-columns:44px 1fr auto;
+  align-items:center;
+  gap:9px;
+  padding:9px;
+  border-radius:18px;
+  background:rgba(255,255,255,.78);
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,.13),0 10px 24px rgba(15,23,42,.08);
+}
+.catalogIcon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;color:white;font-size:22px;background:linear-gradient(135deg,#10b981,#34c8ff,#705cff);box-shadow:0 10px 20px rgba(15,23,42,.14)}
+.catalogTitle{font-size:13px;font-weight:1000;color:#0f172a}
+.catalogMeta{font-size:11px;color:#64748b;margin-top:2px;line-height:1.35}
+.catalogAddBtn{padding:8px 11px;border-radius:999px;font-size:11px;min-width:58px;background:#dcfce7;color:#047857}
+.catalogAddBtn.added{background:#e2e8f0;color:#64748b}
+.catalogEmpty{font-size:12px;color:#64748b;padding:10px;text-align:center}
+
+/* Step 17: Personal MIDI library panel */
+.libraryPanel{
+  margin-top:12px;
+  padding:13px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(239,246,255,.76));
+  box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(255,255,255,.85);
+  text-align:left;
+}
+.libraryHeader{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.libraryHeader b{color:#0f172a}.libraryCount{font-size:11px;font-weight:1000;color:#475569;background:#e0f2fe;border-radius:999px;padding:5px 9px}
+.libraryList{display:grid;gap:8px}
+.libraryRow{display:grid;grid-template-columns:42px 1fr auto;gap:9px;align-items:center;padding:9px;border-radius:18px;background:rgba(255,255,255,.76);box-shadow:inset 0 0 0 1px rgba(148,163,184,.12)}
+.libraryIcon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:white;font-size:21px;background:linear-gradient(135deg,#10b981,#34c8ff,#705cff)}
+.libraryTitle{font-size:12px;font-weight:1000;color:#0f172a}.libraryMeta{font-size:10px;color:#64748b;margin-top:2px;line-height:1.35}
+.libraryActions{display:flex;flex-direction:column;gap:6px}.libraryBtn{padding:7px 9px;border-radius:999px;font-size:10px;min-width:64px}.libraryBtn.play{background:#dcfce7;color:#047857}.libraryBtn.delete{background:#fee2e2;color:#991b1b}
+.libraryEmpty{font-size:12px;color:#64748b;line-height:1.45;padding:8px}
+
+
+/* Step 18.1: Online MIDI search shell - UI only, no live scraping yet */
+.onlineSearchPanel{
+  margin-top:12px;
+  padding:13px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,247,237,.78));
+  box-shadow:0 14px 32px rgba(15,23,42,.10),inset 0 0 0 1px rgba(255,255,255,.85);
+  text-align:left;
+}
+.onlineSearchPanel b{color:#0f172a}
+.onlineSearchPanel input{
+  width:100%;
+  margin-top:9px;
+  padding:12px 13px;
+  border-radius:16px;
+  border:0;
+  background:white;
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,.18);
+  font-weight:900;
+}
+.onlineSearchActions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:9px}
+.onlineSearchActions button{padding:11px 12px;font-size:12px;border-radius:16px}
+.onlineFilters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.onlineFilters select{margin-top:0;padding:10px 11px;border-radius:16px;font-size:12px}
+.onlineStatus{font-size:11px;color:#475569;background:rgba(255,255,255,.64);border-radius:14px;padding:8px;margin-top:8px;line-height:1.35}
+.onlineProviderPills{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.onlineProviderPill{font-size:10px;font-weight:1000;padding:5px 8px;border-radius:999px;background:#fff7ed;color:#9a3412;box-shadow:inset 0 0 0 1px rgba(251,146,60,.18)}
+.onlineResults{display:grid;gap:8px;margin-top:10px}
+.onlineResult{
+  display:grid;
+  grid-template-columns:44px 1fr auto;
+  align-items:center;
+  gap:9px;
+  padding:9px;
+  border-radius:18px;
+  background:rgba(255,255,255,.80);
+  box-shadow:inset 0 0 0 1px rgba(148,163,184,.13),0 10px 24px rgba(15,23,42,.08);
+}
+.onlineIcon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;color:white;font-size:22px;background:linear-gradient(135deg,#f97316,#ffd66b,#34c8ff);box-shadow:0 10px 20px rgba(15,23,42,.14)}
+.onlineTitle{font-size:13px;font-weight:1000;color:#0f172a}
+.onlineMeta{font-size:11px;color:#64748b;margin-top:2px;line-height:1.35}
+.onlineResultActions{display:flex;flex-direction:column;gap:6px}
+.onlineBtn{padding:7px 9px;border-radius:999px;font-size:10px;min-width:70px}
+.onlineBtn.add{background:#dcfce7;color:#047857}.onlineBtn.source{background:#e0f2fe;color:#0369a1}.onlineBtn.disabled{background:#e2e8f0;color:#64748b}
+.onlineNote{font-size:11px;color:#9a3412;background:#fff7ed;border-radius:14px;padding:8px;margin-top:8px;line-height:1.35}
+
 </style>
 </head>
 <body>
@@ -561,6 +667,56 @@ select{width:100%;margin-top:9px;text-align:center}.tip{color:#64748b;font-size:
   <input id="midiInput" type="file" accept=".mid,.midi,audio/midi">
   <span id="midiStatus" class="midiBadge hidden">MIDI loaded</span>
 </div>
+
+<div id="searchPanel" class="searchPanel">
+  <b>🔍 Search MIDI Catalog</b>
+  <div class="missionLine">Search the built-in local catalog and add songs to your MIDI library. This first version works offline and prevents duplicates.</div>
+  <input id="catalogSearch" type="search" placeholder="Type a song name, composer, style...">
+  <div id="catalogResults" class="searchResults"></div>
+</div>
+
+
+<div id="onlineSearchPanel" class="onlineSearchPanel">
+  <b>🌐 Search Online MIDI</b>
+  <div class="missionLine">Step 18.2 adds a real searchable provider index inside the HTML. It searches by song, artist, genre, difficulty and source. Live downloading from websites will come later through a backend/proxy.</div>
+  <input id="onlineMidiSearch" type="search" placeholder="Search: Beethoven, Mozart, Canon, Zelda, Mario, Anime, Holiday...">
+  <div class="onlineSearchActions">
+    <button id="onlineSearchBtn">Search</button>
+    <button id="clearOnlineSearchBtn">Clear</button>
+  </div>
+  <div class="onlineFilters">
+    <select id="onlineProviderFilter">
+      <option value="all">All sources</option>
+      <option value="public">Public-domain</option>
+      <option value="bitmidi">BitMidi-style</option>
+      <option value="midiworld">MIDIWorld-style</option>
+      <option value="community">Community</option>
+    </select>
+    <select id="onlineGenreFilter">
+      <option value="all">All genres</option>
+      <option value="classical">Classical</option>
+      <option value="holiday">Holiday</option>
+      <option value="game">Game</option>
+      <option value="anime">Anime</option>
+      <option value="arcade">Arcade</option>
+      <option value="beginner">Beginner</option>
+    </select>
+  </div>
+  <div class="onlineProviderPills">
+    <span class="onlineProviderPill">Indexed search</span>
+    <span class="onlineProviderPill">Duplicate-safe</span>
+    <span class="onlineProviderPill">Backend-ready</span>
+  </div>
+  <div id="onlineSearchStatus" class="onlineStatus">Type a song or artist. Results are local provider-index entries until live providers are connected.</div>
+  <div class="onlineNote">Important: these provider-style entries use built-in playable templates for now. A later backend will replace each result with a real downloadable MIDI URL after license/CORS checks.</div>
+  <div id="onlineMidiResults" class="onlineResults"></div>
+</div>
+
+<div id="myMidiLibrary" class="libraryPanel">
+  <div class="libraryHeader"><b>⭐ My MIDI Library</b><span id="libraryCount" class="libraryCount">0 songs</span></div>
+  <div id="libraryList" class="libraryList"></div>
+</div>
+
 <div id="songCatalog" class="songCatalog"></div>
 <div id="songMeta" class="songMeta"></div>
 <div class="grid">
@@ -580,7 +736,7 @@ select{width:100%;margin-top:9px;text-align:center}.tip{color:#64748b;font-size:
 <div id="leaderboardPanel" class="leaderboardPanel hidden"></div>
 <div class="grid"><button id="previewBtn">Preview Notes</button><button id="stopPreviewBtn">Stop Sound</button></div>
 
-<p class="tip">Step 9: MIDI delete buttons, long tiles for dense streams, and a cleaner start-first menu.</p>
+<p class="tip">Step 18.2: Search engine over a local provider index. Live providers/proxy can be connected next.</p>
 </div></div>
 
 <div id="pause" class="overlay hidden"><div class="card">
@@ -1270,6 +1426,8 @@ function loadMidiSong(song){
   updateSongMeta();
   renderSongCatalog();
   renderProgressPanel();
+  renderCatalogSearch();
+  renderMyMidiLibrary();
   $("midiStatus").classList.remove("hidden");
   const gridInfo=song.beatGrid?(" · beat grid "+Math.round(song.beatGrid.stepSec*1000)+"ms"):"";
   $("midiStatus").textContent="Loaded: "+song.name+" · "+song.melody.length+" gameplay tiles"+gridInfo+" · full MIDI background";
@@ -2639,6 +2797,356 @@ function updateSongMeta(){
   $("songMeta").innerHTML=`<b>${currentSong.name}</b><br>${currentSong.composer} · ${currentSong.bpm} BPM · ${noteCount} melody notes<br>Best: ${p.best||0} · Stars: ${starsText(p.stars||0)}<br>Hybrid MIDI mode: full song plays in the background; Piano Tiles mode: mostly single tap tiles; HOLD appears only rarely for true sustained notes.`;
 }
 
+// STEP 16: LOCAL MIDI CATALOG SEARCH
+// ----------------------------------
+// This catalog is intentionally local/offline. The items below are converted
+// into playable MIDI-library songs using the existing song templates, so the
+// search/add/remove flow can be tested before adding an online backend.
+const midiCatalog=[
+  {id:"cat_fur_elise",title:"Für Elise",artist:"L. van Beethoven",genre:"Classical",difficulty:"Normal",icon:"🎹",templateId:"fur_elise",source:"Built-in catalog"},
+  {id:"cat_ode_to_joy",title:"Ode to Joy",artist:"L. van Beethoven",genre:"Classical",difficulty:"Easy",icon:"🎼",templateId:"ode",source:"Built-in catalog"},
+  {id:"cat_canon_d",title:"Canon in D",artist:"J. Pachelbel",genre:"Classical",difficulty:"Normal",icon:"🎻",templateId:"canon",source:"Built-in catalog"},
+  {id:"cat_swan_lake",title:"Swan Lake Theme",artist:"P. Tchaikovsky",genre:"Classical",difficulty:"Normal",icon:"🦢",templateId:"swan",source:"Built-in catalog"},
+  {id:"cat_silent_night",title:"Silent Night",artist:"Traditional",genre:"Holiday",difficulty:"Easy",icon:"🌙",templateId:"silent",source:"Built-in catalog"},
+  {id:"cat_deck_halls",title:"Deck the Halls",artist:"Traditional",genre:"Holiday",difficulty:"Easy",icon:"🎄",templateId:"deck",source:"Built-in catalog"},
+  {id:"cat_jingle_bells",title:"Jingle Bells",artist:"J. Pierpont",genre:"Holiday",difficulty:"Easy",icon:"🔔",templateId:"jingle",source:"Built-in catalog"},
+  {id:"cat_twinkle",title:"Twinkle Twinkle Little Star",artist:"Traditional",genre:"Beginner",difficulty:"Easy",icon:"⭐",templateId:"twinkle",source:"Built-in catalog"},
+  {id:"cat_mary_lamb",title:"Mary Had a Little Lamb",artist:"Traditional",genre:"Beginner",difficulty:"Easy",icon:"🐑",templateId:"mary",source:"Built-in catalog"},
+  {id:"cat_london_bridge",title:"London Bridge",artist:"Traditional",genre:"Beginner",difficulty:"Easy",icon:"🌉",templateId:"london",source:"Built-in catalog"},
+  {id:"cat_happy_birthday",title:"Happy Birthday",artist:"Traditional",genre:"Party",difficulty:"Easy",icon:"🎂",templateId:"birthday",source:"Built-in catalog"},
+  {id:"cat_cancan",title:"Can-Can",artist:"J. Offenbach",genre:"Classical",difficulty:"Hard",icon:"💃",templateId:"cancan",source:"Built-in catalog"},
+  {id:"cat_easy_piano_pack",title:"Easy Piano Starter Pack",artist:"Piano Real",genre:"Beginner",difficulty:"Easy",icon:"🎹",templateId:"twinkle",source:"Built-in catalog"},
+  {id:"cat_classical_practice",title:"Classical Practice Run",artist:"Piano Real",genre:"Classical",difficulty:"Normal",icon:"🎼",templateId:"ode",source:"Built-in catalog"},
+  {id:"cat_fast_arcade",title:"Fast Arcade Tiles",artist:"Piano Real",genre:"Arcade",difficulty:"Hard",icon:"⚡",templateId:"cancan",source:"Built-in catalog"}
+];
+
+function cloneSimple(obj){return JSON.parse(JSON.stringify(obj));}
+function noteFrequencyFromName(name){return n(name);}
+function melodyToTimedMidiLike(template,entry){
+  const beatSec=60/Math.max(60,Math.min(200,template.bpm||120));
+  let time=0;
+  const melody=[];
+  const midiEvents=[];
+  const lanePattern=[0,1,2,3,2,1,0,2,3,1,2,0];
+
+  (template.melody||[]).forEach((raw,i)=>{
+    const item=typeof raw==="string"?{note:raw,dur:1}:cloneSimple(raw);
+    const durBeats=Math.max(.25,Number(item.dur||1));
+    const freq=noteFrequencyFromName(item.note);
+    const durSec=Math.max(.12,durBeats*beatSec*.92);
+    melody.push({
+      note:item.note,
+      dur:item.dur||1,
+      time,
+      exactTime:time,
+      gapSec:Math.max(.18,durBeats*beatSec),
+      laneHint:lanePattern[i%lanePattern.length],
+      chordNotes:[{note:item.note,freq,vel:92,dur:durSec,channel:0,program:0,midi:60}]
+    });
+    midiEvents.push({note:item.note,freq,time,dur:durSec,vel:96,channel:0,program:0,midi:60});
+
+    const chordSet=(template.chords&&template.chords[i%template.chords.length])||[];
+    chordSet.slice(0,3).forEach((cn,j)=>{
+      midiEvents.push({note:cn,freq:noteFrequencyFromName(cn),time:time+j*.012,dur:Math.max(.18,durSec*.9),vel:48,channel:1,program:0,midi:55+j});
+    });
+    time+=durBeats*beatSec;
+  });
+  return {melody,midiEvents,lastTime:time};
+}
+
+function makeCatalogSong(entry){
+  const template=songs.find(s=>s.id===entry.templateId)||songs[0];
+  const timed=melodyToTimedMidiLike(template,entry);
+  return {
+    id:"catalog_"+entry.id,
+    importKey:"catalog_"+entry.id,
+    sourceFileName:entry.title+".catalog.mid",
+    pack:"midi",
+    icon:entry.icon||"🎵",
+    midi:true,
+    catalogSong:true,
+    name:entry.title,
+    composer:entry.artist+" · "+entry.source,
+    bpm:template.bpm||120,
+    melody:timed.melody,
+    originalMelodyBeforeRuntimeHolds:timed.melody.map(x=>({...x})),
+    midiEvents:timed.midiEvents,
+    chords:cloneSimple(template.chords||[]),
+    beatGrid:{catalog:true,stepSec:60/Math.max(60,Math.min(200,template.bpm||120))/2,used:timed.melody.length}
+  };
+}
+
+function catalogAlreadyAdded(entry){
+  const key="catalog_"+entry.id;
+  return songs.some(s=>s.importKey===key || s.id==="catalog_"+entry.id) || midiSongs.some(s=>s.importKey===key || s.id==="catalog_"+entry.id);
+}
+
+function addCatalogSong(entryId){
+  const entry=midiCatalog.find(x=>x.id===entryId);
+  if(!entry) return;
+  const song=makeCatalogSong(entry);
+  loadMidiSong(song);
+  currentPack="midi";
+  setPack("midi");
+  const input=$("catalogSearch");
+  if(input) input.value=entry.title;
+  renderCatalogSearch();
+  coach("Added: "+entry.title,"good");
+}
+
+function renderCatalogSearch(){
+  const box=$("catalogResults"), input=$("catalogSearch");
+  if(!box||!input) return;
+  const q=String(input.value||"").trim().toLowerCase();
+  const terms=q.split(/\s+/).filter(Boolean);
+  const results=midiCatalog
+    .map(entry=>{
+      const hay=[entry.title,entry.artist,entry.genre,entry.difficulty,entry.source].join(" ").toLowerCase();
+      const score=terms.length?terms.reduce((s,t)=>s+(hay.includes(t)?1:0),0):1;
+      return {entry,score};
+    })
+    .filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score || a.entry.title.localeCompare(b.entry.title))
+    .slice(0,q?12:6);
+
+  box.innerHTML="";
+  if(!results.length){
+    box.innerHTML='<div class="catalogEmpty">No local catalog results yet. Try Beethoven, Canon, Jingle, Birthday, Swan, or Traditional.</div>';
+    return;
+  }
+  for(const {entry} of results){
+    const added=catalogAlreadyAdded(entry);
+    const row=document.createElement("div");
+    row.className="catalogResult";
+    row.innerHTML=`
+      <div class="catalogIcon">${entry.icon||"🎵"}</div>
+      <div>
+        <div class="catalogTitle">${entry.title}</div>
+        <div class="catalogMeta">${entry.artist} · ${entry.genre} · ${entry.difficulty}<br>${entry.source}</div>
+      </div>
+      <button class="catalogAddBtn ${added?'added':''}" data-catalog-id="${entry.id}">${added?'Added':'Add'}</button>
+    `;
+    const btn=row.querySelector("button");
+    btn.onclick=(ev)=>{
+      ev.stopPropagation();
+      if(!catalogAlreadyAdded(entry)) addCatalogSong(entry.id);
+      else coach("This song is already in your MIDI library.","gold");
+    };
+    box.appendChild(row);
+  }
+}
+
+
+
+function renderMyMidiLibrary(){
+  const list=$("libraryList"), count=$("libraryCount");
+  if(!list||!count) return;
+  midiSongs=dedupeMidiSongsList(midiSongs);
+  localStorage.setItem("realMelodyMidiSongs",JSON.stringify(midiSongs));
+  count.textContent=midiSongs.length+" song"+(midiSongs.length===1?"":"s");
+  list.innerHTML="";
+  if(!midiSongs.length){
+    list.innerHTML='<div class="libraryEmpty">No MIDI songs yet. Search the catalog above or upload a .mid file to add songs here.</div>';
+    return;
+  }
+  midiSongs.slice().reverse().forEach(song=>{
+    const row=document.createElement("div");
+    row.className="libraryRow";
+    const noteCount=(song.melody&&song.melody.length)||0;
+    const source=song.catalogSong?"Catalog":(song.sourceFileName?"Uploaded MIDI":"MIDI");
+    row.innerHTML=`
+      <div class="libraryIcon">${song.icon||"🎵"}</div>
+      <div>
+        <div class="libraryTitle">${song.name||"MIDI Song"}</div>
+        <div class="libraryMeta">${song.composer||source} · ${song.bpm||120} BPM · ${noteCount} tiles</div>
+      </div>
+      <div class="libraryActions">
+        <button class="libraryBtn play" data-song-id="${song.id}">Select</button>
+        <button class="libraryBtn delete" data-song-id="${song.id}">Delete</button>
+      </div>
+    `;
+    row.querySelector(".libraryBtn.play").onclick=(ev)=>{
+      ev.stopPropagation();
+      if(!songs.find(s=>s.id===song.id)) songs.push(song);
+      currentPack="midi";
+      setPack("midi");
+      $("songSelect").value=song.id;
+      currentSong=songs.find(s=>s.id===song.id)||song;
+      updateSongMeta();
+      renderSongCatalog();
+      coach("Selected: "+(song.name||"MIDI Song"),"good");
+    };
+    row.querySelector(".libraryBtn.delete").onclick=(ev)=>{
+      ev.stopPropagation();
+      deleteMidiSong(song.id);
+      renderCatalogSearch();
+      renderMyMidiLibrary();
+    };
+    list.appendChild(row);
+  });
+}
+
+
+// STEP 18.2: ONLINE MIDI SEARCH ENGINE SHELL
+// ------------------------------------------
+// This is still safe/offline, but it is now a real searchable provider index:
+// title, artist, genre, provider, difficulty, aliases and license hints are all
+// searchable. Later a backend/proxy can replace the templateId with a real MIDI
+// download URL after CORS and rights checks.
+const onlineMidiProviderDemo=[
+  {id:"online_pub_fur_elise",title:"Für Elise",artist:"L. van Beethoven",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"public-domain composition / verify MIDI arrangement",difficulty:"Normal",genre:"Classical",aliases:["fur elise","beethoven piano"],icon:"🎹",templateId:"fur_elise",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_pub_ode",title:"Ode to Joy",artist:"L. van Beethoven",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"public-domain composition / verify MIDI arrangement",difficulty:"Easy",genre:"Classical",aliases:["ode","joy","beethoven 9"],icon:"🎼",templateId:"ode",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_pub_canon",title:"Canon in D",artist:"J. Pachelbel",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"public-domain composition / verify MIDI arrangement",difficulty:"Normal",genre:"Classical",aliases:["pachelbel canon","canon d"],icon:"🎻",templateId:"canon",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_pub_swan",title:"Swan Lake Theme",artist:"P. Tchaikovsky",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"public-domain composition / verify MIDI arrangement",difficulty:"Normal",genre:"Classical",aliases:["swan lake","tchaikovsky"],icon:"🦢",templateId:"swan",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_pub_mozart_sonata",title:"Mozart Easy Sonata",artist:"W. A. Mozart",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"public-domain composition / verify MIDI arrangement",difficulty:"Normal",genre:"Classical",aliases:["mozart sonata","piano sonata","sonata facile"],icon:"🎼",templateId:"canon",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_pub_bach_prelude",title:"Bach Prelude Practice",artist:"J. S. Bach",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"public-domain composition / verify MIDI arrangement",difficulty:"Normal",genre:"Classical",aliases:["bach prelude","well tempered clavier"],icon:"🎼",templateId:"ode",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_pub_moonlight",title:"Moonlight Sonata Theme",artist:"L. van Beethoven",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"public-domain composition / verify MIDI arrangement",difficulty:"Hard",genre:"Classical",aliases:["moonlight sonata","beethoven sonata"],icon:"🌙",templateId:"fur_elise",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_world_jingle",title:"Jingle Bells",artist:"J. Pierpont",provider:"MIDIWorld-style result",providerType:"midiworld",licenseHint:"traditional/public-domain composition; verify MIDI file",difficulty:"Easy",genre:"Holiday",aliases:["christmas","xmas","jingle"],icon:"🔔",templateId:"jingle",sourceUrl:"https://www.midiworld.com/"},
+  {id:"online_world_silent",title:"Silent Night",artist:"Traditional",provider:"MIDIWorld-style result",providerType:"midiworld",licenseHint:"traditional/public-domain composition; verify MIDI file",difficulty:"Easy",genre:"Holiday",aliases:["christmas","xmas","silent"],icon:"🌙",templateId:"silent",sourceUrl:"https://www.midiworld.com/"},
+  {id:"online_world_deck",title:"Deck the Halls",artist:"Traditional",provider:"MIDIWorld-style result",providerType:"midiworld",licenseHint:"traditional/public-domain composition; verify MIDI file",difficulty:"Easy",genre:"Holiday",aliases:["christmas","deck halls"],icon:"🎄",templateId:"deck",sourceUrl:"https://www.midiworld.com/"},
+  {id:"online_world_birthday",title:"Happy Birthday",artist:"Traditional",provider:"MIDIWorld-style result",providerType:"midiworld",licenseHint:"verify local copyright status and MIDI arrangement",difficulty:"Easy",genre:"Beginner",aliases:["birthday song","party"],icon:"🎂",templateId:"birthday",sourceUrl:"https://www.midiworld.com/"},
+  {id:"online_bit_classical",title:"Classical Piano Practice",artist:"Various",provider:"BitMidi-style result",providerType:"bitmidi",licenseHint:"community MIDI; verify rights before redistribution",difficulty:"Normal",genre:"Classical",aliases:["classical practice","easy piano"],icon:"🎵",templateId:"ode",sourceUrl:"https://bitmidi.com/"},
+  {id:"online_bit_arcade",title:"Fast Arcade Piano Tiles",artist:"Community MIDI",provider:"BitMidi-style result",providerType:"bitmidi",licenseHint:"community MIDI; verify rights before redistribution",difficulty:"Hard",genre:"Arcade",aliases:["fast","arcade","tiles","speed"],icon:"⚡",templateId:"cancan",sourceUrl:"https://bitmidi.com/"},
+  {id:"online_bit_game_mario",title:"Mario-Style Platformer Theme",artist:"Community MIDI",provider:"BitMidi-style result",providerType:"bitmidi",licenseHint:"fan/community MIDI; verify rights",difficulty:"Hard",genre:"Game",aliases:["mario","super mario","platformer","nintendo"],icon:"🎮",templateId:"cancan",sourceUrl:"https://bitmidi.com/"},
+  {id:"online_bit_game_zelda",title:"Zelda-Style Adventure Theme",artist:"Community MIDI",provider:"BitMidi-style result",providerType:"bitmidi",licenseHint:"fan/community MIDI; verify rights",difficulty:"Normal",genre:"Game",aliases:["zelda","legend of zelda","adventure game"],icon:"🗡️",templateId:"canon",sourceUrl:"https://bitmidi.com/"},
+  {id:"online_bit_game_tetris",title:"Tetris-Style Falling Blocks Theme",artist:"Community MIDI",provider:"BitMidi-style result",providerType:"bitmidi",licenseHint:"fan/community MIDI; verify rights",difficulty:"Hard",genre:"Game",aliases:["tetris","korobeiniki","falling blocks"],icon:"🧩",templateId:"cancan",sourceUrl:"https://bitmidi.com/"},
+  {id:"online_anime_easy",title:"Anime Piano Practice Result",artist:"Provider index",provider:"Community provider placeholder",providerType:"community",licenseHint:"placeholder only; backend needed",difficulty:"Normal",genre:"Anime",aliases:["anime","opening","ost","japanese"],icon:"🌸",templateId:"fur_elise",sourceUrl:"https://bitmidi.com/"},
+  {id:"online_anime_fast",title:"Fast Anime Opening Pattern",artist:"Provider index",provider:"Community provider placeholder",providerType:"community",licenseHint:"placeholder only; backend needed",difficulty:"Hard",genre:"Anime",aliases:["anime opening","fast anime","jpop"],icon:"🌸",templateId:"cancan",sourceUrl:"https://bitmidi.com/"},
+  {id:"online_beginner_twinkle",title:"Twinkle Beginner MIDI",artist:"Traditional",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"traditional/public-domain composition; verify MIDI arrangement",difficulty:"Easy",genre:"Beginner",aliases:["twinkle","little star","kids"],icon:"⭐",templateId:"twinkle",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_beginner_mary",title:"Mary Had a Little Lamb",artist:"Traditional",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"traditional/public-domain composition; verify MIDI arrangement",difficulty:"Easy",genre:"Beginner",aliases:["mary lamb","kids","beginner"],icon:"🐑",templateId:"mary",sourceUrl:"https://www.kunstderfuge.com/"},
+  {id:"online_beginner_london",title:"London Bridge",artist:"Traditional",provider:"Public-domain MIDI catalog",providerType:"public",licenseHint:"traditional/public-domain composition; verify MIDI arrangement",difficulty:"Easy",genre:"Beginner",aliases:["london bridge","kids","beginner"],icon:"🌉",templateId:"london",sourceUrl:"https://www.kunstderfuge.com/"}
+];
+
+function normalizeSearchText(value){
+  return String(value||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().replace(/[^a-z0-9א-ת#\s-]/g," ")
+    .replace(/\s+/g," ").trim();
+}
+
+function scoreOnlineResult(item,terms,rawQuery){
+  if(!terms.length) return 1;
+  const title=normalizeSearchText(item.title);
+  const artist=normalizeSearchText(item.artist);
+  const genre=normalizeSearchText(item.genre);
+  const provider=normalizeSearchText(item.provider);
+  const aliases=normalizeSearchText((item.aliases||[]).join(" "));
+  const hay=[title,artist,genre,provider,aliases,normalizeSearchText(item.difficulty)].join(" ");
+  let score=0;
+  for(const term of terms){
+    if(title===term) score+=12;
+    if(title.startsWith(term)) score+=8;
+    if(title.includes(term)) score+=6;
+    if(artist.includes(term)) score+=5;
+    if(aliases.includes(term)) score+=5;
+    if(genre.includes(term)) score+=3;
+    if(provider.includes(term)) score+=2;
+    if(hay.includes(term)) score+=1;
+  }
+  if(rawQuery && title.includes(rawQuery)) score+=10;
+  if(rawQuery && aliases.includes(rawQuery)) score+=6;
+  if(item.providerType==="public") score+=.3; // prefer safer sources a little
+  if(item.difficulty==="Easy") score+=.15;
+  return score;
+}
+
+function makeOnlineDemoSong(result){
+  const entry={
+    id:"online_"+result.id,
+    title:result.title,
+    artist:result.artist,
+    source:result.provider,
+    icon:result.icon||"🌐",
+    templateId:result.templateId||"ode"
+  };
+  const song=makeCatalogSong(entry);
+  song.id="online_index_"+result.id;
+  song.importKey="online_index_"+result.id;
+  song.onlineProvider=result.provider;
+  song.onlineSourceUrl=result.sourceUrl||"";
+  song.licenseHint=result.licenseHint||"Verify source rights before redistribution";
+  song.name=result.title;
+  song.composer=result.artist+" · "+result.provider;
+  return song;
+}
+
+function onlineResultAlreadyAdded(result){
+  const key="online_index_"+result.id;
+  return songs.some(s=>s.importKey===key || s.id===key) || midiSongs.some(s=>s.importKey===key || s.id===key);
+}
+
+function renderOnlineMidiSearch(){
+  const box=$("onlineMidiResults"), input=$("onlineMidiSearch"), status=$("onlineSearchStatus");
+  if(!box||!input) return;
+  const qRaw=String(input.value||"").trim();
+  const q=normalizeSearchText(qRaw);
+  const terms=q.split(/\s+/).filter(Boolean);
+  const providerFilter=$("onlineProviderFilter")?.value||"all";
+  const genreFilter=$("onlineGenreFilter")?.value||"all";
+
+  const scored=onlineMidiProviderDemo
+    .filter(item=>providerFilter==="all" || item.providerType===providerFilter)
+    .filter(item=>genreFilter==="all" || normalizeSearchText(item.genre)===genreFilter)
+    .map(item=>({item,score:scoreOnlineResult(item,terms,q)}))
+    .filter(x=>terms.length?x.score>0:true)
+    .sort((a,b)=>b.score-a.score || a.item.title.localeCompare(b.item.title))
+    .slice(0,terms.length?12:8);
+
+  box.innerHTML="";
+  if(status){
+    status.textContent=scored.length
+      ? `Found ${scored.length} indexed MIDI result${scored.length===1?"":"s"}. Current mode: local provider index.`
+      : "No indexed results. Try Beethoven, Canon, Mozart, Bach, Zelda, Mario, Tetris, Anime, Holiday, or Beginner.";
+  }
+  if(!scored.length){
+    box.innerHTML='<div class="catalogEmpty">No results in the local provider index. Try another song, artist, source or genre.</div>';
+    return;
+  }
+
+  for(const {item,score} of scored){
+    const added=onlineResultAlreadyAdded(item);
+    const row=document.createElement("div");
+    row.className="onlineResult";
+    row.innerHTML=`
+      <div class="onlineIcon">${item.icon||"🌐"}</div>
+      <div>
+        <div class="onlineTitle">${item.title}</div>
+        <div class="onlineMeta">${item.artist} · ${item.genre} · ${item.difficulty}<br>${item.provider}<br>${item.licenseHint}<br>Match score: ${Math.round(score*10)/10}</div>
+      </div>
+      <div class="onlineResultActions">
+        <button class="onlineBtn add ${added?'disabled':''}" data-online-id="${item.id}">${added?'Added':'Add'}</button>
+        <button class="onlineBtn source" data-url="${item.sourceUrl||''}">Source</button>
+      </div>
+    `;
+    const addBtn=row.querySelector(".onlineBtn.add");
+    const sourceBtn=row.querySelector(".onlineBtn.source");
+    addBtn.onclick=(ev)=>{
+      ev.stopPropagation();
+      if(onlineResultAlreadyAdded(item)){
+        coach("This indexed MIDI result is already in your MIDI library.","gold");
+        return;
+      }
+      const song=makeOnlineDemoSong(item);
+      loadMidiSong(song);
+      renderOnlineMidiSearch();
+      coach("Added indexed MIDI result: "+item.title,"good");
+    };
+    sourceBtn.onclick=(ev)=>{
+      ev.stopPropagation();
+      if(item.sourceUrl) window.open(item.sourceUrl,"_blank","noopener,noreferrer");
+    };
+    box.appendChild(row);
+  }
+}
+
+function clearOnlineMidiSearch(){
+  const input=$("onlineMidiSearch");
+  if(input) input.value="";
+  if($("onlineProviderFilter")) $("onlineProviderFilter").value="all";
+  if($("onlineGenreFilter")) $("onlineGenreFilter").value="all";
+  renderOnlineMidiSearch();
+}
+
 $("tapStartBtn").onclick=()=>{
   const sp=$("splash");
   sp.classList.add("hideSplash");
@@ -2819,7 +3327,14 @@ $("midiInput").addEventListener("change",async e=>{
   }
 });
 
-populateSongs();renderDailyChallenge();renderDailyMission();renderProgressPanel();renderShop();applyShopTheme();renderAchievements();renderLeaderboard();hud();
+populateSongs();renderCatalogSearch();renderMyMidiLibrary();renderOnlineMidiSearch();
+if($("catalogSearch")) $("catalogSearch").addEventListener("input",renderCatalogSearch);
+if($("onlineMidiSearch")) $("onlineMidiSearch").addEventListener("input",renderOnlineMidiSearch);
+if($("onlineSearchBtn")) $("onlineSearchBtn").onclick=renderOnlineMidiSearch;
+if($("onlineProviderFilter")) $("onlineProviderFilter").addEventListener("change",renderOnlineMidiSearch);
+if($("onlineGenreFilter")) $("onlineGenreFilter").addEventListener("change",renderOnlineMidiSearch);
+if($("clearOnlineSearchBtn")) $("clearOnlineSearchBtn").onclick=clearOnlineMidiSearch;
+renderDailyChallenge();renderDailyMission();renderProgressPanel();renderShop();applyShopTheme();renderAchievements();renderLeaderboard();hud();
 </script>
 </body>
 </html>
