@@ -17,15 +17,28 @@ app.get("/api/search", async (req, res) => {
     return res.json({ results: [] });
   }
 
-  const results = [
-    {
-      title: `${q} - MIDI search result`,
-      artist: "Unknown",
-      source: "Demo Provider",
-      url: "",
-      type: "demo"
-    }
-  ];
+const midiCatalog = [
+  { title: "Fur Elise", artist: "Beethoven", genre: "classical" },
+  { title: "Canon in D", artist: "Pachelbel", genre: "classical" },
+  { title: "Moonlight Sonata", artist: "Beethoven", genre: "classical" },
+  { title: "Turkish March", artist: "Mozart", genre: "classical" },
+  { title: "Jingle Bells", artist: "Traditional", genre: "holiday" },
+  { title: "Silent Night", artist: "Traditional", genre: "holiday" },
+  { title: "Super Mario Bros", artist: "Nintendo", genre: "game" },
+  { title: "Zelda Theme", artist: "Nintendo", genre: "game" },
+  { title: "Pokemon Theme", artist: "Nintendo", genre: "game" },
+  { title: "Happy Birthday", artist: "Traditional", genre: "beginner" }
+];
+
+const results = midiCatalog
+  .filter(song =>
+    song.title.toLowerCase().includes(q.toLowerCase()) ||
+    song.artist.toLowerCase().includes(q.toLowerCase())
+  )
+  .map(song => ({
+    ...song,
+    source: "Cloud Catalog"
+  }));
 
   res.json({ results });
 });
