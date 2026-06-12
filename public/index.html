@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Piano Tiles MIDI Cloud</title>
+</head>
+<body>
+  <h1>Piano Tiles MIDI Cloud is running 🎹</h1>
+
+  <input id="q" placeholder="Search MIDI song">
+  <button onclick="searchMidi()">Search</button>
+
+  <pre id="out"></pre>
+
+  <script>
+    async function searchMidi() {
+      const q = document.getElementById("q").value;
+      const res = await fetch("/api/search?q=" + encodeURIComponent(q));
+      const data = await res.json();
+      document.getElementById("out").textContent =
+        JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
