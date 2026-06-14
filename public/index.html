@@ -1306,7 +1306,6 @@ function loadMidiSong(song){
   updateSongMeta();
   renderSongCatalog();
   renderProgressPanel();
-  renderCatalogSearch();
   $("midiStatus").classList.remove("hidden");
   const gridInfo=song.beatGrid?(" · beat grid "+Math.round(song.beatGrid.stepSec*1000)+"ms"):"";
   $("midiStatus").textContent="Loaded: "+song.name+" · "+song.melody.length+" gameplay tiles"+gridInfo+" · full MIDI background";
@@ -2676,19 +2675,6 @@ function updateSongMeta(){
   $("songMeta").innerHTML=`<b>${currentSong.name}</b><br>${currentSong.composer} · ${currentSong.bpm} BPM · ${noteCount} melody notes<br>Best: ${p.best||0} · Stars: ${starsText(p.stars||0)}<br>Hybrid MIDI mode: full song plays in the background; Piano Tiles mode: mostly single tap tiles; HOLD appears only rarely for true sustained notes.`;
 }
 
-// Removed duplicate local MIDI catalog search panel.
-function renderCatalogSearch(){}
-
-function renderMyMidiLibrary(){
-  // Unified library mode: MIDI songs are shown inside the main Song Library only.
-  // This function is kept as a safe no-op because other code may still call it after import/upload.
-}
-
-
-// Removed duplicate online MIDI provider-index search panel.
-function renderOnlineMidiSearch(){}
-function clearOnlineMidiSearch(){}
-
 $("tapStartBtn").onclick=()=>{
   const sp=$("splash");
   sp.classList.add("hideSplash");
@@ -2940,8 +2926,6 @@ $("midiInput").addEventListener("change",async e=>{
 });
 
 populateSongs();
-if($("onlineProviderFilter")) $("onlineProviderFilter").addEventListener("change",renderOnlineMidiSearch);
-if($("onlineGenreFilter")) $("onlineGenreFilter").addEventListener("change",renderOnlineMidiSearch);
 renderDailyChallenge();renderDailyMission();renderProgressPanel();renderShop();applyShopTheme();renderAchievements();renderLeaderboard();hud();
 </script>
 </body>
