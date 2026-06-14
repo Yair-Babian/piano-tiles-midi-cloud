@@ -577,16 +577,17 @@ select{width:100%;margin-top:9px;text-align:center}.tip{color:#64748b;font-size:
 
 <div class="libraryPanel">
   <div class="libraryHeader">
-    <b>💾 Backup MIDI Library</b>
-    <span class="libraryCount">Safe backup</span>
+    <b>💾 Backup Song Library</b>
+    <span class="libraryCount">Import / Export</span>
   </div>
-  <button id="exportLibraryBtn">📤 Export Library</button>
+  <button id="exportLibraryBtn">📤 Export MIDI Backup</button>
   <input id="importLibraryInput" type="file" accept=".json" style="display:none">
-  <button id="importLibraryBtn">📥 Import Library</button>
+  <button id="importLibraryBtn">📥 Import MIDI Backup</button>
 </div>
-<div id="myMidiLibrary" class="libraryPanel">
-  <div class="libraryHeader"><b>⭐ My MIDI Library</b><span id="libraryCount" class="libraryCount">0 songs</span></div>
-  <div id="libraryList" class="libraryList"></div>
+
+<div class="libraryPanel" id="unifiedSongLibraryHeader">
+  <div class="libraryHeader"><b>🎵 Song Library</b><span class="libraryCount">Built-in + MIDI</span></div>
+  <div class="missionLine">All built-in songs and uploaded/imported MIDI songs appear here in one list. Use the MIDI tab to show only your MIDI songs.</div>
 </div>
 
 <div class="packTabs">
@@ -2680,51 +2681,8 @@ function updateSongMeta(){
 function renderCatalogSearch(){}
 
 function renderMyMidiLibrary(){
-  const list=$("libraryList"), count=$("libraryCount");
-  if(!list||!count) return;
-  midiSongs=dedupeMidiSongsList(midiSongs);
-  localStorage.setItem("realMelodyMidiSongs",JSON.stringify(midiSongs));
-  count.textContent=midiSongs.length+" song"+(midiSongs.length===1?"":"s");
-  list.innerHTML="";
-  if(!midiSongs.length){
-    list.innerHTML='<div class="libraryEmpty">No MIDI songs yet. Upload a .mid file or import a saved library backup to add songs here.</div>';
-    return;
-  }
-  midiSongs.slice().reverse().forEach(song=>{
-    const row=document.createElement("div");
-    row.className="libraryRow";
-    const noteCount=(song.melody&&song.melody.length)||0;
-    const source=song.catalogSong?"Catalog":(song.sourceFileName?"Uploaded MIDI":"MIDI");
-    row.innerHTML=`
-      <div class="libraryIcon">${song.icon||"🎵"}</div>
-      <div>
-        <div class="libraryTitle">${song.name||"MIDI Song"}</div>
-        <div class="libraryMeta">${song.composer||source} · ${song.bpm||120} BPM · ${noteCount} tiles</div>
-      </div>
-      <div class="libraryActions">
-        <button class="libraryBtn play" data-song-id="${song.id}">Select</button>
-        <button class="libraryBtn delete" data-song-id="${song.id}">Delete</button>
-      </div>
-    `;
-    row.querySelector(".libraryBtn.play").onclick=(ev)=>{
-      ev.stopPropagation();
-      if(!songs.find(s=>s.id===song.id)) songs.push(song);
-      currentPack="midi";
-      setPack("midi");
-      $("songSelect").value=song.id;
-      currentSong=songs.find(s=>s.id===song.id)||song;
-      updateSongMeta();
-      renderSongCatalog();
-      coach("Selected: "+(song.name||"MIDI Song"),"good");
-    };
-    row.querySelector(".libraryBtn.delete").onclick=(ev)=>{
-      ev.stopPropagation();
-      deleteMidiSong(song.id);
-      renderCatalogSearch();
-      renderMyMidiLibrary();
-    };
-    list.appendChild(row);
-  });
+  // Unified library mode: MIDI songs are shown inside the main Song Library only.
+  // This function is kept as a safe no-op because other code may still call it after import/upload.
 }
 
 
