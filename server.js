@@ -17,18 +17,45 @@ app.get("/api/search", async (req, res) => {
     return res.json({ results: [] });
   }
 
-  const midiCatalog = [
-    { title: "Fur Elise", artist: "Beethoven", genre: "classical" },
-    { title: "Canon in D", artist: "Pachelbel", genre: "classical" },
-    { title: "Moonlight Sonata", artist: "Beethoven", genre: "classical" },
-    { title: "Turkish March", artist: "Mozart", genre: "classical" },
-    { title: "Jingle Bells", artist: "Traditional", genre: "holiday" },
-    { title: "Silent Night", artist: "Traditional", genre: "holiday" },
-    { title: "Super Mario Bros", artist: "Nintendo", genre: "game" },
-    { title: "Zelda Theme", artist: "Nintendo", genre: "game" },
-    { title: "Pokemon Theme", artist: "Nintendo", genre: "game" },
-    { title: "Happy Birthday", artist: "Traditional", genre: "beginner" }
-  ];
+ const midiCatalog = [
+  { title: "Fur Elise", artist: "Beethoven", genre: "classical", difficulty: "Normal" },
+  { title: "Moonlight Sonata", artist: "Beethoven", genre: "classical", difficulty: "Hard" },
+  { title: "Ode to Joy", artist: "Beethoven", genre: "classical", difficulty: "Easy" },
+  { title: "Symphony No. 5 Theme", artist: "Beethoven", genre: "classical", difficulty: "Normal" },
+
+  { title: "Canon in D", artist: "Pachelbel", genre: "classical", difficulty: "Normal" },
+
+  { title: "Eine Kleine Nachtmusik", artist: "Mozart", genre: "classical", difficulty: "Normal" },
+  { title: "Turkish March", artist: "Mozart", genre: "classical", difficulty: "Hard" },
+  { title: "Twinkle Variations", artist: "Mozart", genre: "classical", difficulty: "Easy" },
+
+  { title: "Prelude in C Major", artist: "Bach", genre: "classical", difficulty: "Normal" },
+  { title: "Minuet in G", artist: "Bach", genre: "classical", difficulty: "Easy" },
+  { title: "Toccata and Fugue Theme", artist: "Bach", genre: "classical", difficulty: "Hard" },
+
+  { title: "Nocturne Op. 9 No. 2", artist: "Chopin", genre: "classical", difficulty: "Hard" },
+  { title: "Minute Waltz", artist: "Chopin", genre: "classical", difficulty: "Hard" },
+  { title: "Raindrop Prelude", artist: "Chopin", genre: "classical", difficulty: "Normal" },
+
+  { title: "Spring from The Four Seasons", artist: "Vivaldi", genre: "classical", difficulty: "Normal" },
+  { title: "Winter from The Four Seasons", artist: "Vivaldi", genre: "classical", difficulty: "Hard" },
+
+  { title: "Hallelujah Chorus", artist: "Handel", genre: "classical", difficulty: "Normal" },
+  { title: "Water Music Theme", artist: "Handel", genre: "classical", difficulty: "Normal" },
+
+  { title: "Ave Maria", artist: "Schubert", genre: "classical", difficulty: "Normal" },
+  { title: "Serenade", artist: "Schubert", genre: "classical", difficulty: "Normal" },
+
+  { title: "The Blue Danube", artist: "Strauss", genre: "classical", difficulty: "Normal" },
+  { title: "Radetzky March", artist: "Strauss", genre: "classical", difficulty: "Easy" },
+
+  { title: "Twinkle Twinkle Little Star", artist: "Traditional", genre: "beginner", difficulty: "Easy" },
+  { title: "Mary Had a Little Lamb", artist: "Traditional", genre: "beginner", difficulty: "Easy" },
+  { title: "London Bridge", artist: "Traditional", genre: "beginner", difficulty: "Easy" },
+  { title: "Jingle Bells", artist: "Traditional", genre: "holiday", difficulty: "Easy" },
+  { title: "Silent Night", artist: "Traditional", genre: "holiday", difficulty: "Easy" },
+  { title: "Deck the Halls", artist: "Traditional", genre: "holiday", difficulty: "Easy" }
+];
 
   const results = midiCatalog
     .filter(song => {
