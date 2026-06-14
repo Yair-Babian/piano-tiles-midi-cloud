@@ -1307,7 +1307,6 @@ function loadMidiSong(song){
   renderSongCatalog();
   renderProgressPanel();
   renderCatalogSearch();
-  renderMyMidiLibrary();
   $("midiStatus").classList.remove("hidden");
   const gridInfo=song.beatGrid?(" · beat grid "+Math.round(song.beatGrid.stepSec*1000)+"ms"):"";
   $("midiStatus").textContent="Loaded: "+song.name+" · "+song.melody.length+" gameplay tiles"+gridInfo+" · full MIDI background";
@@ -2940,7 +2939,7 @@ $("midiInput").addEventListener("change",async e=>{
   }
 });
 
-populateSongs();renderMyMidiLibrary();
+populateSongs();
 if($("onlineProviderFilter")) $("onlineProviderFilter").addEventListener("change",renderOnlineMidiSearch);
 if($("onlineGenreFilter")) $("onlineGenreFilter").addEventListener("change",renderOnlineMidiSearch);
 renderDailyChallenge();renderDailyMission();renderProgressPanel();renderShop();applyShopTheme();renderAchievements();renderLeaderboard();hud();
