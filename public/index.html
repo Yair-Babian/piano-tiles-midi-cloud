@@ -712,6 +712,15 @@ select{width:100%;margin-top:9px;text-align:center}.tip{color:#64748b;font-size:
   <div id="onlineMidiResults" class="onlineResults"></div>
 </div>
 
+<div class="libraryPanel">
+  <div class="libraryHeader">
+    <b>💾 Backup MIDI Library</b>
+    <span class="libraryCount">Safe backup</span>
+  </div>
+  <button id="exportLibraryBtn">📤 Export Library</button>
+  <input id="importLibraryInput" type="file" accept=".json" style="display:none">
+  <button id="importLibraryBtn">📥 Import Library</button>
+</div>
 <div id="myMidiLibrary" class="libraryPanel">
   <div class="libraryHeader"><b>⭐ My MIDI Library</b><span id="libraryCount" class="libraryCount">0 songs</span></div>
   <div id="libraryList" class="libraryList"></div>
@@ -3171,7 +3180,77 @@ $("dailyBtn").onclick=()=>{
 };
 $("previewBtn").onclick=()=>{updateSongMeta();coach("Preview plays the song. Gameplay uses a classic Piano Tiles visual map.","gold");playRealSongPreview(false)};
 $("stopPreviewBtn").onclick=()=>{stopAllMusic();coach("Sound stopped.","good")};
+function exportMidiLibrary(){
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    midiSongs: midiSongs || []
+  };
 
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json"
+  });
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "piano_nova_midi_library.json";
+  a.click();
+
+  URL.revokeObjectURL(a.href);
+  coach("MIDI library exported successfully.","good");
+}
+
+function importMidiLibraryFile(file){
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const incoming = Array.isArray(data.midiSongs) ? data.midiSongs : [];
+
+      let added = 0;
+      for (const song of incoming) {
+        const exists = midiSongs.some(s =>
+          s.id === song.id ||
+          normalizeSearchText(s.name) === normalizeSearchText(song.name)
+        );
+
+        if (!exists) {
+          midiSongs.push(song);
+          if (!songs.some(s => s.id === song.id)) songs.push(song);
+          added++;
+        }
+      }
+
+      localStorage.setItem("realMelodyMidiSongs", JSON.stringify(midiSongs));
+
+      populateSongs();
+      renderSongCatalog();
+      renderMidiLibrary?.();
+
+      coach("Imported " + added + " MIDI song(s).","good");
+    } catch (err) {
+      console.error(err);
+      coach("Import failed: invalid library file.","bad");
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+if ($("exportLibraryBtn")) {
+  $("exportLibraryBtn").onclick = exportMidiLibrary;
+}
+
+if ($("importLibraryBtn") && $("importLibraryInput")) {
+  $("importLibraryBtn").onclick = () => $("importLibraryInput").click();
+
+  $("importLibraryInput").onchange = e => {
+    const file = e.target.files && e.target.files[0];
+    if (file) importMidiLibraryFile(file);
+    e.target.value = "";
+  };
+}
 $("startBtn").onclick=()=>startGame(false);$("autoPlayBtn").onclick=()=>startGame(true);$("againBtn").onclick=()=>startGame(autoPlayer);$("restartBtn").onclick=()=>startGame(autoPlayer);$("pauseBtn").onclick=togglePause;$("resumeBtn").onclick=togglePause;$("menuBtn").onclick=backMenu;$("homeBtn").onclick=backMenu;
 $("songMode").onclick=()=>{mode="song";$("songMode").classList.add("selected");$("endlessMode").classList.remove("selected");coach("Real Songs mode selected.","gold")};
 $("endlessMode").onclick=()=>{mode="endless";$("endlessMode").classList.add("selected");$("songMode").classList.remove("selected");coach("Endless mode selected.","gold")};
