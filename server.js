@@ -31,11 +31,10 @@ app.get("/api/search", async (req, res) => {
   ];
 
   const results = midiCatalog
-    .filter(song =>
-      song.title.toLowerCase().includes(q) ||
-      song.artist.toLowerCase().includes(q) ||
-      song.genre.toLowerCase().includes(q)
-    )
+    .filter(song => {
+  const haystack = `${song.title} ${song.artist} ${song.genre}`.toLowerCase();
+  return haystack.includes(q);
+})
     .map(song => ({
       ...song,
       source: "Cloud Catalog",
